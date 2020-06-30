@@ -2,35 +2,33 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 
-
-def jsonUpdate():
-    d = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
-    with open("data/Data.json", "w") as file:
-        file.write(d)
-
-
-def jsonLoad():
-    with open("data/Data.json", "r") as f:
-        x = f.read()
-        return json.loads(x)
-
-
-def jsonLoadMods():
-    with open("data/Mods.Json", "r") as f:
-        x = f.read()
-        return json.loads(x)
-
-
-def jsonUpdateMods():
-    d = json.dumps(mods)
-    with open("data/Mods.Json", "w") as file:
-        file.write(d)
-
-
 class Moderation(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    def jsonUpdate(self):
+        d = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
+        with open("data/Data.json", "w") as file:
+            file.write(d)
+
+
+    def jsonLoad(self):
+        with open("data/Data.json", "r") as f:
+            x = f.read()
+            return json.loads(x)
+
+
+    def jsonLoadMods(self):
+        with open("data/Mods.Json", "r") as f:
+            x = f.read()
+            return json.loads(x)
+
+
+    def jsonUpdateMods(self):
+        d = json.dumps(mods)
+        with open("data/Mods.Json", "w") as file:
+            file.write(d)
 
     @commands.command()
     @has_permissions(manage_roles=True)
@@ -39,9 +37,9 @@ class Moderation(commands.Cog):
             user.add_roles(roles=role, reason="Give role command")
 
     @commands.command(pass_context=True)
-    async def whois(ctx, *user: discord.Member):
+    async def whois(self, ctx, *user: discord.Member):
         global data
-        data = jsonLoad()
+        data = self.jsonLoad()
         r = False
         if not user:
             user = ctx.message.author
@@ -97,11 +95,11 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(pass_context=True)
-    async def warn(ctx, user: discord.Member, *cont):
+    async def warn(self, ctx, user: discord.Member, *cont):
         global data
-        data = jsonLoad()
+        data = self.jsonLoad()
         global mods
-        mods = jsonLoadMods()
+        mods = self.jsonLoadMods()
         print("command attempt")
         if str(ctx.message.author.id) in mods:
             w = False
@@ -129,9 +127,9 @@ class Moderation(commands.Cog):
             await ctx.send("You do not have permission to do this")
 
     @commands.command(pass_context=True)
-    async def addmod(ctx, user: discord.Member, rank):
+    async def addmod(self, ctx, user: discord.Member, rank):
         w=False
-        jsonLoadMods()
+        mods = jsonLoadMods()
         if mods[str(ctx.message.author.id)] >= 255 and mods[str(ctx.message.author.id)] > int(rank):
             if str(user.id) in mods:
                 if mods[str(user.id)] >= mods[str(ctx.message.author.id)]:
