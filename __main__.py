@@ -16,8 +16,8 @@ from discord import FFmpegPCMAudio
 from os import system
 from datetime import datetime
 from data.secret import token_const
-initial_extensions = ['cogs.Fun', 'cogs.Moderation', 'cogs.Miscellaneous']
-BOT_PREFIX = "%"
+initial_extensions = ['cogs.Fun', 'cogs.Moderation', 'cogs.Miscellaneous', 'cogs.Money']
+BOT_PREFIX = ("%",'-')
 TOKEN = token_const
 client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
 client.case_insensitive = True
@@ -35,6 +35,9 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    with open('data/Mods.Json', "r") as f:
+        x = f.read()
+        print(json.loads(x))
 
 
 @client.event

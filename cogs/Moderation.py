@@ -1,12 +1,37 @@
 import discord
+import json
 from discord.ext import commands
 from discord.ext.commands import has_permissions
+from datetime import datetime
 
 
 class Moderation(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    def jsonUpdate(self, data):
+        d = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
+        with open("data/Data.json", "w") as file:
+            file.write(d)
+
+
+    def jsonLoad(self):
+        with open("data/Data.json", "r") as f:
+            x = f.read()
+            return json.loads(x)
+
+
+    def jsonLoadMods(self):
+        with open("data/Mods.Json", "r") as f:
+            x = f.read()
+            return json.loads(x)
+
+
+    def jsonUpdateMods(self, mods):
+        d = json.dumps(mods)
+        with open("data/Mods.Json", "w") as file:
+            file.write(d)
 
     @commands.command()
     @has_permissions(manage_roles=True)
@@ -15,9 +40,9 @@ class Moderation(commands.Cog):
             user.add_roles(roles=role, reason="Give role command")
 
     @commands.command(pass_context=True)
-    async def whois(ctx, *user: discord.Member):
+    async def whois(self, ctx, *user: discord.Member):
         global data
-        data = jsonLoad()
+        data = self.jsonLoad()
         r = False
         if not user:
             user = ctx.message.author
@@ -67,56 +92,9 @@ class Moderation(commands.Cog):
         embed.add_field(name="Account Created", value=b, inline=False)
         embed.add_field(name="Joined on", value=c, inline=False)
         embed.add_field(name="Roles", value=str(text), inline=False)
-        embed.add_field(name="Warns", value=w["Warns"], inline=False)
         embed.add_field(name="Status", value=w["Status"], inline=False)
         print(embed.fields)
         await ctx.send(embed=embed)
-
-    @commands.command(pass_context=True)
-    async def warn(ctx, user: discord.Member, *cont):
-        global data
-        data = jsonLoad()
-        global mods
-        mods = jsonLoadMods()
-        print("command attempt")
-        if str(ctx.message.author.id) in mods:
-            w = False
-            if str(user.id) in mods:
-                if mods[str(user.id)] >= mods[str(ctx.message.author.id)]:
-                    print('this')
-                    w = True
-            if mods[str(ctx.message.author.id)] > 0 and not w:
-                stro = ""
-                for i in cont:
-                    stro = stro + i + " "
-                await user.send("You have been warned for the following reason: \n" + stro)
-                w = data[str(user.id)]
-                w["Warns"] = str(int(w["Warns"]) + 1)
-                x = str(user.id) + " has been warned for "+ stro + " on " + str(datetime.date(datetime.now())) + "\n"
-                with open("WarnLog.txt", "a") as f:
-                    f.write(x)
-                    f.close()
-                w = data[str(user.id)]
-                jsonUpdate()
-                await ctx.message.delete()
-            else:
-                await ctx.send("You do not have permission to do this")
-        else:
-            await ctx.send("You do not have permission to do this")
-
-    @commands.command(pass_context=True)
-    async def addmod(ctx, user: discord.Member, rank):
-        w=False
-        if mods[str(ctx.message.author.id)] >= 255 and mods[str(ctx.message.author.id)] > int(rank):
-            if str(user.id) in mods:
-                if mods[str(user.id)] >= mods[str(ctx.message.author.id)]:
-                    w=True
-            if not w:
-                mods[str(user.id)] = int(rank)
-                jsonUpdateMods()
-                await ctx.send("User " + user.display_name + " is now a rank " + str(rank) + " mod")
-            else:
-                await ctx.send("Nice try but you can't do that")
 
     @commands.command()
     @has_permissions(ban_members=True)
@@ -128,7 +106,7 @@ class Moderation(commands.Cog):
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *reason):
         reason = " ".join(reason)
-        ctx.guild.kick(user=member, reason=reason)
+        await ctx.guild.kick(user=member, reason=reason)
 
     @commands.command()
     @has_permissions(manage_roles=True)

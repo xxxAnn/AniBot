@@ -1,0 +1,638 @@
+{
+    "116275390695079945": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "155149108183695360": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "159985870458322944": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "172002275412279296": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "184405311681986560": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "195244363339530240": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "201491628354043905": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "204255221017214977": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "216437513709944832": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "235088799074484224": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "235148962103951360": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "239631525350604801": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "242730576195354624": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "251239170058616833": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "252128902418268161": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "270366726737231884": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "270904126974590976": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "272388174838497280": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": "5"
+    },
+    "292953664492929025": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "298796807323123712": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "303269779022675969": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "331431342438875137": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "LastMail": 1586717432.985134,
+        "Muted": false,
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "331434928594223108": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "365975655608745985": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "383015864082890754": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "390867450302038016": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "391594988116508672": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "395385545326592010": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "413159742236786723": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "424137718961012737": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "432610292342587392": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "434556304661544960": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "435420939522539530": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "441337989604573196": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "463323787304108052": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "465208983880466435": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "468281173072805889": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "473596191364349953": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "480021292154617869": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "488462892317016075": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "491769129318088714": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "527682752791707650": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "529022308354883617": {
+        "Ally": "sure",
+        "Country": "Jupiter",
+        "Identity": "Unknown",
+        "Status": "Citizen",
+        "Warns": 0
+    },
+    "537381139204276235": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": " Yuming",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "537764050164121600": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "538752772175298561": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "540036031378882572": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "550613223733329920": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "551865777016537128": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "560990210939420709": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "561940156517449752": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "LastMail": 1584066431.801945,
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "563532781527760916": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": " Jason",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "574257639895334913": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": " Bari",
+        "LastMail": 1586229061.6269,
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "575846113710440448": {
+        "Ally": "Yes",
+        "Country": "Canada",
+        "Identity": " Paris",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "578268273330749450": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "581119691754307590": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "585571294171496512": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "588484377030426625": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": "201"
+    },
+    "596502577747853342": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "610101310968037377": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "611015268419764224": {
+        "Ally": "I dont rlly know",
+        "Country": "CaNaDa",
+        "Status": "Citizen",
+        "Warns": "1"
+    },
+    "611313117674340352": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "614243835756675118": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Status": "OG_Citizen",
+        "Warns": "1"
+    },
+    "618166814685265931": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "619311335116767232": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "619653697714257931": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "623881513867542561": {
+        "Ally": "Yes",
+        "Country": "Canada",
+        "Identity": "Unknown",
+        "LastMail": 1584318841.0715759,
+        "Muted": false,
+        "Status": "Citizen",
+        "Warns": 0
+    },
+    "627116322097987624": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "628734876631171072": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "LastMail": 1586035080.3825974,
+        "Status": "OG_Citizen",
+        "Warns": "1"
+    },
+    "629088910919729182": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": " Charlotte",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "629794101260189747": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "639984475232665638": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "643082926740996109": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "647254758033195048": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "647566994140561408": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "654861866341892117": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": "2"
+    },
+    "661311344133406737": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "662487202793783360": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "676920128117407800": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "677621865904209930": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "677947110108430357": {
+        "Ally": "Yes",
+        "Country": "Canada",
+        "Status": "Pending",
+        "Warns": 0
+    },
+    "677971016156315648": {
+        "Ally": "I dont rlly know",
+        "Country": "CaNaDa",
+        "Status": "Citizen",
+        "Warns": 0
+    },
+    "682723751607009280": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Muted": false,
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "684906259228786733": {
+        "Ally": "N/A",
+        "Country": "N/A",
+        "Identity": "Unknown",
+        "Status": "OG_Citizen",
+        "Warns": 0
+    },
+    "687442381066469390": {
+        "Ally": "sure",
+        "Country": "Jupiter",
+        "Status": "Pending",
+        "Warns": 0
+    },
+    "692106917320982529": {
+        "Ally": "idk",
+        "Country": "me\u00c9",
+        "Identity": "Unknown",
+        "Status": "Pending",
+        "Warns": "1"
+    },
+    "692901380058382376": {
+        "Ally": "yeah",
+        "Country": "Canada",
+        "Identity": "Unknown",
+        "Muted": false,
+        "Status": "Citizen",
+        "Warns": 0
+    },
+    "692907151538126959": {
+        "Ally": "yeah",
+        "Country": "Canada",
+        "Status": "Pending",
+        "Warns": 0
+    },
+    "Voting": {
+        "NextVote": 39,
+        "Votes": [
+            {
+                "People": {},
+                "Points": 10,
+                "Ticket": 37
+            },
+            {
+                "People": {
+                    "331431342438875137": 7
+                },
+                "Points": 10,
+                "Ticket": 38
+            }
+        ]
+    }
+}
