@@ -6,32 +6,14 @@ class Fun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        
+
     @commands.command()
-    async def kill(ctx, arg):
+    async def kill(self, ctx, arg):
         await ctx.send(arg + " is dead")
 
     @commands.command()
-    async def suicide(ctx):
+    async def suicide(self, ctx):
         await ctx.send("https://www.mext.go.jp/a_menu/shotou/seitoshidou/1302907.htm")
-
-    @commands.command(pass_context=True)
-    async def cl(ctx, word1, word2):
-        word1 = str(word1)
-        word2 = str(word2)
-        x = []
-        for letter in word1:
-            for letter2 in word2:
-                if str.lower(letter2) == str.lower(letter):
-                    if letter in x:
-                        pass
-                    else:
-                        x.append(str.lower(letter))
-        v = str(x)
-        v = v.replace("'", "")
-        v = v.replace("[", "")
-        v = v.replace("]", "")
-        await ctx.send(v)
 
     @commands.command()
     async def emotify(self, ctx, *, arg):
@@ -49,7 +31,7 @@ class Fun(commands.Cog):
         await ctx.send(x)
 
     @commands.command(pass_context=True)
-    async def pfp(ctx, *user: discord.Member):
+    async def pfp(self, ctx, *user: discord.Member):
         r = False
         if not user:
             user = ctx.message.author
@@ -59,7 +41,7 @@ class Fun(commands.Cog):
         await ctx.send(user.avatar_url)
 
     @commands.command(pass_context=True)
-    async def love(ctx, *tuple):
+    async def love(self, ctx, *tuple):
         if len(tuple) > 1:
             if tuple[0] == "Xuning" and tuple[1] == "Nancy":
                 await ctx.send("100" + "% Compatible")

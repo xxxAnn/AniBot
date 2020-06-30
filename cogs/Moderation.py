@@ -14,7 +14,7 @@ class Moderation(commands.Cog):
         if user and role:
             user.add_roles(roles=role, reason="Give role command")
 
-    @client.command(pass_context=True)
+    @commands.command(pass_context=True)
     async def whois(ctx, *user: discord.Member):
         global data
         data = jsonLoad()
@@ -71,6 +71,38 @@ class Moderation(commands.Cog):
         embed.add_field(name="Status", value=w["Status"], inline=False)
         print(embed.fields)
         await ctx.send(embed=embed)
+
+    @commands.command(pass_context=True)
+    async def warn(ctx, user: discord.Member, *cont):
+        global data
+        data = jsonLoad()
+        global mods
+        mods = jsonLoadMods()
+        print("command attempt")
+        if str(ctx.message.author.id) in mods:
+            w = False
+            if str(user.id) in mods:
+                if mods[str(user.id)] >= mods[str(ctx.message.author.id)]:
+                    print('this')
+                    w = True
+            if mods[str(ctx.message.author.id)] > 0 and not w:
+                stro = ""
+                for i in cont:
+                    stro = stro + i + " "
+                await user.send("You have been warned for the following reason: \n" + stro)
+                w = data[str(user.id)]
+                w["Warns"] = str(int(w["Warns"]) + 1)
+                x = str(user.id) + " has been warned for "+ stro + " on " + str(datetime.date(datetime.now())) + "\n"
+                with open("WarnLog.txt", "a") as f:
+                    f.write(x)
+                    f.close()
+                w = data[str(user.id)]
+                jsonUpdate()
+                await ctx.message.delete()
+            else:
+                await ctx.send("You do not have permission to do this")
+        else:
+            await ctx.send("You do not have permission to do this")
 
     @commands.command(pass_context=True)
     async def addmod(ctx, user: discord.Member, rank):
