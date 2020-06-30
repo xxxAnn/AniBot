@@ -1,0 +1,57 @@
+{
+    "331431342438875137": {
+        "Energy": {
+            "Recover": 1586571030,
+            "Val": 10
+        },
+        "Inventory": [
+            {
+                "Amount": 2005,
+                "Exclusive": false,
+                "Id": "1",
+                "Name": "Oil"
+            },
+            {
+                "Amount": 1944,
+                "Exclusive": false,
+                "Id": "2",
+                "Name": "Bronze Ore"
+            },
+            {
+                "Amount": 0,
+                "Exclusive": false,
+                "Id": "103",
+                "Name": "Toy Knife"
+            },
+            {
+                "Amount": 26,
+                "Exclusive": false,
+                "Id": "17",
+                "Name": "Meat"
+            },
+            {
+                "Amount": 1,
+                "Exclusive": false,
+                "Id": "101",
+                "Name": "Plastic"
+            },
+            {
+                "Amount": 1,
+                "Exclusive": false,
+                "Id": "100",
+                "Name": "Bronze Knife"
+            }
+        ],
+        "Money": 10030
+    },
+    "628734876631171072": {
+        "Energy": {
+            "Recover": 1586571030,
+            "Val": 10
+        },
+        "Inventory": [],
+        "Money": 300
+    },
+    "Currency": "\u00a7",
+    "Shops": {}
+}

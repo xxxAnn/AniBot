@@ -3,6 +3,30 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions
 
 
+def jsonUpdate():
+    d = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
+    with open("data/Data.json", "w") as file:
+        file.write(d)
+
+
+def jsonLoad():
+    with open("data/Data.json", "r") as f:
+        x = f.read()
+        return json.loads(x)
+
+
+def jsonLoadMods():
+    with open("data/Mods.Json", "r") as f:
+        x = f.read()
+        return json.loads(x)
+
+
+def jsonUpdateMods():
+    d = json.dumps(mods)
+    with open("data/Mods.Json", "w") as file:
+        file.write(d)
+
+
 class Moderation(commands.Cog):
 
     def __init__(self, bot):
@@ -93,7 +117,7 @@ class Moderation(commands.Cog):
                 w = data[str(user.id)]
                 w["Warns"] = str(int(w["Warns"]) + 1)
                 x = str(user.id) + " has been warned for "+ stro + " on " + str(datetime.date(datetime.now())) + "\n"
-                with open("WarnLog.txt", "a") as f:
+                with open("data\WarnLog.txt", "a") as f:
                     f.write(x)
                     f.close()
                 w = data[str(user.id)]
@@ -107,6 +131,7 @@ class Moderation(commands.Cog):
     @commands.command(pass_context=True)
     async def addmod(ctx, user: discord.Member, rank):
         w=False
+        jsonLoadMods()
         if mods[str(ctx.message.author.id)] >= 255 and mods[str(ctx.message.author.id)] > int(rank):
             if str(user.id) in mods:
                 if mods[str(user.id)] >= mods[str(ctx.message.author.id)]:
