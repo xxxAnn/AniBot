@@ -326,6 +326,47 @@ class Economy(commands.Cog):
         else:
             await ctx.send("Ya can't eat that")
 
+    @commands.command()
+    async def exploit(ctx):
+        cramed = cram()
+        player = constructPlayer(ctx.author.id)
+        if player.energy["Val"]>0:
+            player.energy["Val"]-=1
+            items = [["Frog", 3], ["Oil", 1], ["Diamond Ore", 4], ["Gold Ore", 5], ["Iron Ore", 6], ["Silver Ore", 7], ["Bronze Ore", 2], ["Nothing", 0],
+                     ["Wood", 8], ["Bread", 9], ["Meat", 17]]
+            weighs = [0.3, 0.3, .005, .0075, .01, .05, .1, .3929, 0.2, 0.1, 0.05]
+            itemMulti = 1
+            moneyMulti = 1
+            result = random.choices(items, weighs)
+            result = result[0]
+            print(result)
+            for item in cramed["itemMulti"].keys():
+                if player.inventory.has(item) is not False:
+                    item2 = player.inventory.get(item)
+                    if item2.amount>0:
+                        itemMulti*=cramed["itemMulti"][item]
+            for item in cramed["moneyMulti"].keys():
+                if player.inventory.has(item) is not False:
+                    item2 = player.inventory.get(item)
+                    if item2.amount>0:
+                        moneyMulti*=cramed["moneyMulti"][item]
+            xValue = randint(1, randint(5,10))
+            player.money+= moneyMulti*xValue
+            if result[1] != 0:
+                if player.inventory.has(str(result[1])) is not False:
+                    toGiveItem = player.inventory.get(str(result[1]))
+                    toGiveItem.amount+= itemMulti
+                else:
+                    toGiveItem = Item(result[1], result[0], itemMulti, False)
+                    player.inventory.add(toGiveItem)
+            if result[1] == 0:
+                await ctx.send("You gained {0}{1}".format(str(xValue*moneyMulti), "ยง"))
+            else:
+                await ctx.send("You gained {0}{1} and found {2} {3}".format(str(xValue * moneyMulti), "ยง", itemMulti, toGiveItem.name))
+        else:
+            await ctx.send("No energy sowwy")
+        player.save()
+
     @commands.Cog.listener()
     async def on_message(self, message):
         global lasttime
