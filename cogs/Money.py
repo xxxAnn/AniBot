@@ -326,8 +326,27 @@ class Economy(commands.Cog):
         else:
             await ctx.send("Ya can't eat that")
 
+    @commands.command(aliases=['inv'])
+    async def inventory(self, ctx, *user: discord.Member):
+        if not user:
+            user = ctx.message.author
+        else:
+            user = user[0]
+        player = constructPlayer(user.id)
+        string = "{0}'s inventory\n".format(user.display_name)
+        embed = discord.Embed(title="{0}'s inventory".format(user.display_name))
+        for item in player.inventory.content:
+            if item.exclusive:
+                embed.add_field(name=item.name, value="Exclusive")
+                string+=str(item.name) + ": Exclusive\n"
+            else:
+                embed.add_field(name=item.name, value=item.amount)
+                string+=str(item.name) + ": **x{}**\n".format(item.amount)
+        player.save()
+        await ctx.send(string)
+
     @commands.command()
-    async def exploit(ctx):
+    async def exploit(self, ctx):
         cramed = cram()
         player = constructPlayer(ctx.author.id)
         if player.energy["Val"]>0:
