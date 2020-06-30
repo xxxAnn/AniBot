@@ -1,12 +1,12 @@
 {
     "331431342438875137": {
         "Energy": {
-            "Recover": 1586571030,
+            "Recover": 1593550204,
             "Val": 10
         },
         "Inventory": [
             {
-                "Amount": 2005,
+                "Amount": 1005,
                 "Exclusive": false,
                 "Id": "1",
                 "Name": "Oil"
@@ -30,7 +30,7 @@
                 "Name": "Meat"
             },
             {
-                "Amount": 1,
+                "Amount": 11,
                 "Exclusive": false,
                 "Id": "101",
                 "Name": "Plastic"
@@ -42,11 +42,27 @@
                 "Name": "Bronze Knife"
             }
         ],
-        "Money": 10030
+        "Money": 4730
+    },
+    "488462892317016075": {
+        "Energy": {
+            "Recover": 1593550204,
+            "Val": 10
+        },
+        "Inventory": [],
+        "Money": 5000
+    },
+    "588484377030426625": {
+        "Energy": {
+            "Recover": 1593550204,
+            "Val": 10
+        },
+        "Inventory": [],
+        "Money": 300
     },
     "628734876631171072": {
         "Energy": {
-            "Recover": 1586571030,
+            "Recover": 1593550205,
             "Val": 10
         },
         "Inventory": [],

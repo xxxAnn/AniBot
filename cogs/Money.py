@@ -7,6 +7,11 @@ from random import randint
 from datetime import datetime
 from time import sleep
 import operator
+
+
+lasttime = int(time.time())
+
+
 class Inventory:
     def __init__(self, content, content_literal):
         self.content = content
@@ -68,10 +73,24 @@ class Player:
         data[self.id]["Inventory"] = content_literal
         jsonUpdate(data)
 
+def executeSomething():
+    global data
+    data = jsonLoad()
+    for i in data.keys():
+        if "Energy" in data[i]:
+            player = constructPlayer(i)
+            id = int(i)
+            if int(time.time()) - data[i]["Energy"]["Recover"] > 299:
+                data[i]["Energy"]["Val"] = 10
+                player.energy["Val"] = 10
+                data[i]["Energy"]["Recover"] = int(time.time())
+                player.energy["Recover"] = int(time.time())
+                player.save()
+        jsonUpdate(data)
 
 def jsonUpdate(data):
     d = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
-    with open("Money.json", "w") as file:
+    with open("data/Money.json", "w") as file:
         file.write(d)
 
 
@@ -83,8 +102,14 @@ def toContentLiteral(inventoryContentItem):
     return literal_list
 
 
+def jsonLoad():
+    with open("data/Money.json", "r") as f:
+        x = f.read()
+        return json.loads(x)
+
+
 def cram():
-    with open("Cram.json", "r") as f:
+    with open("data/Cram.json", "r") as f:
         x = f.read()
         return json.loads(x)
 
@@ -132,6 +157,181 @@ class Economy(commands.Cog):
         await ctx.send(embed=embed)
         player.save()
 
+    @commands.command()
+    async def pay(self, ctx, user: discord.Member, amount):
+        amount = amount.replace(",", "")
+        amount = int(amount)
+        if not amount < 0 or ctx.message.author.id == 692901380058382376:
+            id = str(user.id)
+            idc = str(ctx.message.author.id)
+            player = constructPlayer(id)
+            playerc = constructPlayer(idc)
+            if amount > playerc.money:
+                await ctx.send("You ain't got the money")
+            else:
+                playerc.money -= amount
+                player.money += amount
+                await ctx.send("Succesfully paid user")
+            player.save()
+            playerc.save()
+        else:
+            await ctx.send("Stealing is wrong")
+
+    @commands.command()
+    async def top(self, ctx):
+        global data
+        data = jsonLoad()
+        exp = {}
+        for i in data:
+            if "Money" in data[i]:
+                x = data[i]
+                exp[i] = x["Money"]
+        sortedExp = sorted(exp.items(), key=operator.itemgetter(1))
+        sortedExp = list(reversed(sortedExp))
+        w = len(exp) - 1
+        string = "```pl\n"
+        for x in range(0, 10):
+            try:
+                txt = str(sortedExp[x][0])
+            except:
+                break
+            usa = self.bot.get_user(int(txt))
+            w = True
+            if not usa:
+                data.pop(txt)
+                w = False
+            elif usa.bot:
+                data.pop(txt)
+                w = False
+            if w:
+                val = data[txt]["Money"]
+                val = f'{val:,}'.format(val=val)
+                string = string + "{" + str(x + 1) + "}     #" + usa.display_name + "\n        Money : [" + str(val) + "] " + data[
+                    "Currency"] + "\n"
+        string = string + '```'
+        await ctx.send(string)
+
+    @commands.command()
+    async def addexcl(self, ctx, id: str, *name):
+        if ctx.message.author.id == 331431342438875137:
+            player = constructPlayer(ctx.author.id)
+            name = " ".join(name)
+            player.inventory.content.append({"Amount": 1, "Exclusive": True, "Name": name, "Id": id})
+            player.save()
+        else:
+            await ctx.send("Sorry lol you can't do that")
+    @commands.command()
+    async def craft(self, ctx, itemId, amountx=1):
+        def craft(result, ctx, items, amounts, resultAmount, resultId, player):
+            ranX = False
+            if len(items) > 1:
+                ranX = True
+                item1 = items[0]
+                item2 = items[1]
+                amount1 = amounts[0]
+                amount2 = amounts[1]
+            else:
+                item1 = items[0]
+                amount1 = amounts[0]
+            if ranX is True:
+                if player.inventory.has(item1) is not False and player.inventory.has(item2) is not False:
+                    item1 = player.inventory.has(item1)
+                    item2 = player.inventory.has(item2)
+                    if item1.amount > (amount1 - 1) and item2.amount > (amount2 - 1):
+                        item1.amount -= amount1
+                        item2.amount -= amount2
+                        if player.inventory.has(resultId) is False:
+                            resultItem = Item(id=resultId, name=result, amount=resultAmount, exclusive=False)
+                            player.inventory.content.append(resultItem)
+                            player.save()
+                        else:
+                            resultInInv = player.inventory.has(resultId)
+                            resultInInv.amount += resultAmount
+                            print("hey")
+                            player.save()
+                        return ("Successfully Crafted {0}".format(result))
+                    else:
+                        return ("You dont have sufficient resources")
+                else:
+                    return ("You dont have sufficient resources")
+            else:
+                if player.inventory.has(item1) is not False:
+                    item1 = player.inventory.has(item1)
+                    if item1.amount >= amount1:
+                        item1.amount -= amount1
+                        if player.inventory.has(resultId) is False:
+                            resultItem = Item(id=resultId, name=result, amount=resultAmount, exclusive=False)
+                            player.inventory.content.append(resultItem)
+                            player.save()
+                        else:
+                            resultInInv = player.inventory.has(resultId)
+                            resultInInv.amount += resultAmount
+                            player.save()
+                        return ("Successfully Crafted {0}".format(result))
+                    else:
+                        return ("You dont have sufficient resources")
+                else:
+                    return ("You dont have sufficient resources")
+            return ("error")
+
+        user = ctx.message.author
+        player = constructPlayer(user.id)
+        cramed = cram()
+        crafts = cramed["crafts"]
+        for item in crafts.keys():
+            zx = crafts[item]
+            if "Id" in zx:
+                if zx["Id"] == itemId:
+                    list2 = []
+                    for i in zx["list2"]:
+                        list2.append(i*amountx)
+                    z = craft(zx["Result"], ctx, zx["list1"], list2, (zx["ResultAmount"]*amountx), itemId,  player)
+                    await ctx.send(z)
+
+    @commands.command()
+    async def craftable(self, ctx):
+        global data
+        data= jsonLoad()
+        cramed = cram()
+        string = ""
+        for i in cramed["crafts"].keys():
+            item = cramed["crafts"][i]
+            text= "**{0}**, Requires Item Id: **{2}** __x{1}__".format(item["Result"], item["list2"][0], item["list1"][0])
+            if len(item["list1"])>1:
+                text+= " and Item Id **{1}** __x{0}__".format(item["list2"][1], item["list1"][1])
+            text+="\n"
+            string+=text
+        await ctx.send(string)
+
+    @commands.command()
+    async def energy(self, ctx):
+        user = ctx.message.author
+        player = constructPlayer(user.id)
+        await ctx.send("{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
+        player.save()
+
+    @commands.command()
+    async def eat(self, ctx, itemId: str):
+        player = constructPlayer(ctx.author.id)
+        cramed = cram()
+        if str(itemId) in cramed["Eatables"]:
+            if player.inventory.has(itemId) is not False:
+                itemX = player.inventory.has(itemId)
+                itemX.amount-=1
+                player.energy["Val"] += cramed["Eatables"][itemId]
+                await ctx.send("Replenished {0} energy".format(cramed["Eatables"][itemId]))
+                player.save()
+            else:
+                await ctx.send("Y'aint have that")
+        else:
+            await ctx.send("Ya can't eat that")
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        global lasttime
+        if time.time() - lasttime > 10:
+            lasttime = time.time()
+            executeSomething()
 
 def setup(bot):
     bot.add_cog(Economy(bot))
