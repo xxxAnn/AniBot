@@ -16,7 +16,7 @@ from discord import FFmpegPCMAudio
 from os import system
 from datetime import datetime
 from data.secret import token_const
-initial_extensions = ['cogs.Fun', 'cogs.Moderation']
+initial_extensions = ['cogs.Fun', 'cogs.Moderation', 'cogs.Miscellaneous']
 BOT_PREFIX = "%"
 TOKEN = token_const
 client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
@@ -42,40 +42,7 @@ async def on_message(message):
     await client.process_commands(message)
 
 
-@client.command()
-async def removerole(ctx, member: discord.Member, role: discord.Role):
-    usersList = [331431342438875137]
-    bannedRoles = [695789139953451110, 655489817823674369, 678752359425507378]
-    if ctx.author.id in usersList:
-        if role.id not in bannedRoles:
-            await member.remove_roles(role)
-            await ctx.send("successfully removed role")
-        else:
-            await ctx.send("you can't remove that role")
-    else:
-        await ctx.send("you can't use that command")
 
-
-@client.command()
-async def online(ctx):
-    mem = ctx.message.guild.members
-    embed = discord.Embed(title="Online", description="Online Members", color=0x0d20a4)
-    for i in mem:
-        k = str(i.status)
-        if k == "online" or k == "idle" or k == "dnd":
-            if not i.bot:
-                embed.add_field(name="*" + i.display_name + "*", value=i.mention, inline=False)
-    await ctx.send(embed=embed)
-
-
-@client.command(pass_context=True)
-async def ismod(ctx, user: discord.Member):
-    global mods
-    mods = jsonLoadMods()
-    if str(user.id) in mods:
-        await ctx.send("Rank: " + str(mods[str(user.id)]) + " Mod")
-    else:
-        await ctx.send("Nope")
 @client.command()
 async def kill(ctx, arg):
     await ctx.send(arg + " is dead")
@@ -83,111 +50,7 @@ async def kill(ctx, arg):
 
 @client.command()
 async def suicide(ctx):
-    await ctx.send(ctx.message.author.mention + " is now dead")
-
-
-@client.command()
-async def presentations(ctx):
-    await ctx.send("I am 高木さん the superior anime character from the best anime ever, you disagree ?, fight me !")
-
-
-@client.command()
-async def define(ctx, arg):
-    if 0 == 1:
-        arg = str(arg)
-        v = dictionary.meaning(arg)
-        k = ""
-        d = 0
-        if str(v) == "None":
-            await ctx.send("No definition found")
-        if str(v) != "None":
-            if "Noun" in v:
-                c = v["Noun"]
-                r = 0
-                for i in c:
-                    d = d + 1
-                    k = str(k + "\n" + "*" + str(d) + ": " + c[r] + "*")
-                    r = r + 1
-                    if d > 1:
-                        break
-                    print(k)
-            if "Verb" in v:
-                c = v["Verb"]
-                r = 0
-                for i in c:
-                    d = d + 1
-                    k = str(k + "\n" + "*" + str(d) + ": " + c[r] + "*")
-                    r = r + 1
-                    if d > 1:
-                        break
-                    print(k)
-            if "Pronoun" in v:
-                c = v["Pronoun"]
-                r = 0
-                for i in c:
-                    d = d + 1
-                    k = str(k + "\n" + "*" + str(d) + ": " + c[r] + "*")
-                    r = r + 1
-                    if d > 1:
-                        break
-                    print(k)
-            if "Adverb" in v:
-                c = v["Adverb"]
-                r = 0
-                for i in c:
-                    d = d + 1
-                    k = str(k + "\n" + "*" + str(d) + ": " + c[r] + "*")
-                    r = r + 1
-                    if d > 1:
-                        break
-                    print(k)
-            if "Article" in v:
-                c = v["Article"]
-                r = 0
-                for i in c:
-                    d = d + 1
-                    k = str(k + "\n" + "*" + str(d) + ": " + c[r] + "*")
-                    r = r + 1
-                    if d > 1:
-                        break
-                    print(k)
-            if "Adjective" in v:
-                c = v["Adjective"]
-                r = 0
-                for i in c:
-                    d = d + 1
-                    k = str(k + "\n" + "*" + str(d) + ": " + c[r] + "*")
-                    r = r + 1
-                    if d > 1:
-                        break
-                    print(str(c))
-            await ctx.send('\nMeaning(s) : ' + k)
-    else:
-        await ctx.send("This command is currently disabled")
-
-
-@client.command()
-async def say(ctx, *, arg):
-    await ctx.message.delete()
-    await ctx.send(arg)
-
-
-@client.command()
-async def cookie(ctx, arg):
-    await ctx.send(arg + " gets a cookie")
-
-
-@client.command(pass_context=True)
-async def invite(ctx):
-    await ctx.send("https://discordapp.com/oauth2/authorize?client_id=618166814685265931&scope=bot&permissions=8")
-
-
-@client.command(pass_context=True)
-async def question(ctx, *, arg):
-    y = ["yes", "no", "probably", "definitely not", "are you dumb ?", "No u", "Definitely",
-         "I LOVE IT WHEN U CALL ME SEÑORITA"]
-    x = random.choice(y)
-    await ctx.send(x)
+    await ctx.send("https://www.mext.go.jp/a_menu/shotou/seitoshidou/1302907.htm")
 
 
 @client.command(pass_context=True)
@@ -198,63 +61,6 @@ async def react(ctx, arg):
     time.sleep(0.2)
     await x.delete()
     print(arg)
-
-
-@client.command(pass_context=True)
-async def oldest(ctx):
-    peeps = ctx.message.guild.members
-    largestyear = 2019
-    largestmonth = 12
-    largestday = 31
-    usera = "t"
-    kd = []
-    amount = 0
-    for i in peeps:
-        if i.bot is False and i.id != 272388174838497280:
-            month = int(i.created_at.strftime("%m"))
-            day = int(i.created_at.strftime("%d"))
-            year = int(i.created_at.strftime("%Y"))
-            month = str(month)
-            year = str(year)
-            day = str(day)
-            largestmonth = str(largestmonth)
-            largestyear = str(largestyear)
-            largestday = str(largestday)
-            #print(i.name + " " + day + "/"+ month +"/"+ year + " " + largestday + "/" + largestmonth + "/" + largestyear )
-            month = int(month)
-            year = int(year)
-            day = int(day)
-            largestmonth = int(largestmonth)
-            largestyear = int(largestyear)
-            largestday = int(largestday)
-            if year < largestyear:
-                kd.append(i)
-                largestday = day
-                largestyear = year
-                largestmonth = month
-            if year == largestyear:
-                if month < largestmonth:
-                    kd.append(i)
-                    largestday = day
-                    largestyear = year
-                    largestmonth = month
-                    t = largestday + 1
-                if month == largestmonth:
-                    if day < largestday + 1:
-                        largestday = day
-                        kd.append(i)
-    kd = list(dict.fromkeys(kd))
-    for x in kd:
-        #print(x.name + str(x.id))
-        month = int(x.created_at.strftime("%m"))
-        day = int(x.created_at.strftime("%d"))
-        year = int(x.created_at.strftime("%Y"))
-        if month < largestmonth + 1 and day < largestday + 1 and year < largestyear + 1 and x.id != 272388174838497280:
-            if usera == "t":
-                usera = x.name + ", " + x.display_name
-            else:
-                usera = usera + "\n" + x.name + ", " + x.display_name
-    await ctx.send("```" + usera + "\n" + "```")
 
 
 @client.command(pass_context=True)

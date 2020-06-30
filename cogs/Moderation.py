@@ -26,6 +26,11 @@ class Moderation(commands.Cog):
         reason = " ".join(reason)
         ctx.guild.kick(user=member, reason=reason)
 
+    @commands.command()
+    @has_permissions(manage_roles=True)
+    async def removerole(self, ctx,  user: discord.Member, role: discord.Role):
+        if user and role:
+            user.remove_roles(roles=role, reason="Remove role command")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
