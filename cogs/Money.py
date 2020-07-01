@@ -374,6 +374,7 @@ class Economy(commands.Cog):
     async def energy(self, ctx):
         user = ctx.message.author
         player = constructPlayer(user.id)
+        executeSomething()
         await ctx.send("{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
         player.save()
 
