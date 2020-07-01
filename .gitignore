@@ -1,7 +1,7 @@
 
 data/secret.py
-data/Mods.Json
+Mods.Json
 *.pyc
 data/WarnLog.txt
-data/Money.json
-data/Data.json
+Money.json
+Data.json
