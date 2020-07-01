@@ -1,2 +1,7 @@
 
 data/secret.py
+Mods.Json
+*.pyc
+data/WarnLog.txt
+Money.json
+Data.json

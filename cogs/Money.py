@@ -73,6 +73,11 @@ class Player:
         data[self.id]["Inventory"] = content_literal
         jsonUpdate(data)
 
+def find_item(self, element):
+    if isinstance(element, list):
+        new_list = []
+        for item in element:
+            
 def executeSomething():
     global data
     data = jsonLoad()
