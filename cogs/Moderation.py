@@ -92,7 +92,6 @@ class Moderation(commands.Cog):
         embed.add_field(name="Account Created", value=b, inline=False)
         embed.add_field(name="Joined on", value=c, inline=False)
         embed.add_field(name="Roles", value=str(text), inline=False)
-        embed.add_field(name="Status", value=w["Status"], inline=False)
         print(embed.fields)
         await ctx.send(embed=embed)
 
