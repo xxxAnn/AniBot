@@ -27,7 +27,7 @@
     "diamond_sword": {
       "Result": "Diamond Sword",
       "ResultAmount": 1,
-      "Id": 104,
+      "Id": "104",
       "list1": [
         "4",
         "100"
@@ -40,7 +40,7 @@
     "silver_sword": {
       "Result": "Silver Sword",
       "ResultAmount": 1,
-      "Id": 105,
+      "Id": "105",
       "list1": [
         "7",
         "100"
