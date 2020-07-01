@@ -23,19 +23,18 @@
       "list2": [
         100
       ]
-    }
-  },
-  "toy_knife": {
-      "Result": "Toy Knife",
-      "ResultAmount": 1,
-      "Id": "103",
-      "list1": [
-        "101"
-      ],
-      "list2": [
-        10
-      ]
-  },
+    },
+    "toy_knife": {
+        "Result": "Toy Knife",
+        "ResultAmount": 1,
+        "Id": "103",
+        "list1": [
+          "101"
+        ],
+        "list2": [
+          10
+        ]
+    },
   "itemMulti": {
     "100": 10
   },

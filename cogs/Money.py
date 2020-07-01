@@ -73,11 +73,20 @@ class Player:
         data[self.id]["Inventory"] = content_literal
         jsonUpdate(data)
 
-def find_item(self, element):
+def find_item_from_id(self, element):
+    '''[["Frog", 3], ["Oil", 1], ["Diamond Ore", 4], ["Gold Ore", 5], ["Iron Ore", 6], ["Silver Ore", 7], ["Bronze Ore", 2], ["Nothing", 0],
+             ["Wood", 8], ["Bread", 9], ["Meat", 17]]'''
+    dict_name = {"1": "Oil", "2": "Bronze Ore", "3": "Frog", "4": "Diamond Ore", "5": "Gold Ore",
+    "6": "Iron Ore", "7": "Silver Ore", "8": "Wood", "9": "Bread", "17": "Meat", "100": "Bronze Knife", "101": "Plastic", "103": "Toy Knife"}
     if isinstance(element, list):
         new_list = []
         for item in element:
-            
+            if item in dict_name:
+                item_name = dict_name[item]
+                return Item(item, item_name, 0, False)
+            else:
+                return "Not found"
+
 def executeSomething():
     global data
     data = jsonLoad()
@@ -148,6 +157,10 @@ class Economy(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    async def idtoname(self, ctx, id: str):
+        await ctx.send(find_item_from_id(id).name)
 
     @commands.command()
     async def bal(self, ctx, *user: discord.Member):
