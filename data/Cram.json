@@ -23,26 +23,42 @@
       "list2": [
         100
       ]
+    },
+    "diamond_sword": {
+      "Result": "Diamond Sword",
+      "ResultAmount": 1,
+      "Id": 104,
+      "list1": [
+        "4",
+        "100"
+      ],
+      "list2":[
+        5,
+        1
+    ]
+    },
+    "toy_knife": {
+        "Result": "Toy Knife",
+        "ResultAmount": 1,
+        "Id": "103",
+        "list1": [
+          "101"
+        ],
+        "list2": [
+          10
+        ]
     }
   },
-  "toy_knife": {
-      "Result": "Toy Knife",
-      "ResultAmount": 1,
-      "Id": "103",
-      "list1": [
-        "101"
-      ],
-      "list2": [
-        10
-      ]
-  },
   "itemMulti": {
-    "100": 10
+    "100": 10,
+    "104": 50
   },
   "moneyMulti": {
-    "100": 10
+    "100": 10,
+    "104": 25
   },
   "Eatables": {
+    "9": 1,
     "17": 3
   }
 }
