@@ -89,7 +89,8 @@ def find_id_from_item_name(name: str):
     "bronze_knife": "100",
     "plastic": "101",
     "toy_knife": "103",
-    "diamond_sword": "104"}
+    "diamond_sword": "104",
+    "silver_sword": "105"}
     name = str.lower(name)
     if name in id_dict:
         return(id_dict[name])
@@ -98,8 +99,22 @@ def find_id_from_item_name(name: str):
 
 
 def find_item_from_id(element):
-    dict_name = {"1": "Oil", "2": "Bronze Ore", "3": "Frog", "4": "Diamond Ore", "5": "Gold Ore",
-    "6": "Iron Ore", "7": "Silver Ore", "8": "Wood", "9": "Bread", "17": "Meat", "100": "Bronze Knife", "101": "Plastic", "103": "Toy Knife"}
+    dict_name = {
+    "1": "Oil",
+    "2": "Bronze Ore",
+    "3": "Frog",
+    "4": "Diamond Ore",
+    "5": "Gold Ore",
+    "6": "Iron Ore",
+    "7": "Silver Ore",
+    "8": "Wood",
+    "9": "Bread",
+    "17": "Meat",
+    "100": "Bronze Knife",
+    "101": "Plastic",
+    "103": "Toy Knife",
+    "104": "Diamond Sword",
+    "105": "Silver Sword"}
     if isinstance(element, list):
         new_list = []
         for item in element:

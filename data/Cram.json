@@ -37,6 +37,19 @@
         1
     ]
     },
+    "silver_sword": {
+      "Result": "Silver Sword",
+      "ResultAmount": 1,
+      "Id": 105,
+      "list1": [
+        "7",
+        "100"
+      ],
+      "list2":[
+        5,
+        1
+    ]
+    },
     "toy_knife": {
         "Result": "Toy Knife",
         "ResultAmount": 1,
@@ -51,10 +64,12 @@
   },
   "itemMulti": {
     "100": 10,
-    "104": 50
+    "104": 50,
+    "105": 25
   },
   "moneyMulti": {
     "100": 10,
+    "101": 12,
     "104": 25
   },
   "Eatables": {
