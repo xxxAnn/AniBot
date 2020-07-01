@@ -224,7 +224,7 @@ class Economy(commands.Cog):
     async def pay(self, ctx, user: discord.Member, amount):
         amount = amount.replace(",", "")
         amount = int(amount)
-        if not amount < 0 or ctx.message.author.id == 692901380058382376:
+        if not amount < 0 or ctx.message.author.id == 331431342438875137:
             id = str(user.id)
             idc = str(ctx.message.author.id)
             player = constructPlayer(id)
