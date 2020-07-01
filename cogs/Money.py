@@ -73,6 +73,30 @@ class Player:
         data[self.id]["Inventory"] = content_literal
         jsonUpdate(data)
 
+
+def find_id_from_item_name(name: str):
+    id_dict = {
+    "oil": "1",
+    "bronze_ore": "2",
+    "frog": "3",
+    "diamond_ore": "4",
+    "gold_ore": "5",
+    "iron_ore": "6",
+    "silver_ore": "7",
+    "wood": "8",
+    "bread": "9",
+    "meat": "17",
+    "bronze_knife": "100",
+    "plastic": "101",
+    "toy_knife": "103",
+    "diamond_sword": "104"}
+    name = str.lower(name)
+    if name in id_dict:
+        return(id_dict[name])
+    else:
+        return "Not Found"
+
+
 def find_item_from_id(element):
     dict_name = {"1": "Oil", "2": "Bronze Ore", "3": "Frog", "4": "Diamond Ore", "5": "Gold Ore",
     "6": "Iron Ore", "7": "Silver Ore", "8": "Wood", "9": "Bread", "17": "Meat", "100": "Bronze Knife", "101": "Plastic", "103": "Toy Knife"}
@@ -81,9 +105,10 @@ def find_item_from_id(element):
         for item in element:
             if item in dict_name:
                 item_name = dict_name[item]
-                return Item(item, item_name, 0, False)
+                new_list.append(Item(item, item_name, 0, False))
             else:
                 return "Not found"
+            return new_list
     else:
         if element in dict_name:
             element_name = dict_name[element]
@@ -244,7 +269,7 @@ class Economy(commands.Cog):
         else:
             await ctx.send("Sorry lol you can't do that")
     @commands.command()
-    async def craft(self, ctx, itemId, amountx=1):
+    async def craft(self, ctx, itemName, amountx=1):
         def craft(result, ctx, items, amounts, resultAmount, resultId, player):
             ranX = False
             if len(items) > 1:
@@ -301,6 +326,7 @@ class Economy(commands.Cog):
         player = constructPlayer(user.id)
         cramed = cram()
         crafts = cramed["crafts"]
+        itemId = find_id_from_item_name(itemName)
         for item in crafts.keys():
             zx = crafts[item]
             if "Id" in zx:
@@ -310,6 +336,9 @@ class Economy(commands.Cog):
                         list2.append(i*amountx)
                     z = craft(zx["Result"], ctx, zx["list1"], list2, (zx["ResultAmount"]*amountx), itemId,  player)
                     await ctx.send(z)
+                    return
+        await ctx.send("Craft not found")
+
 
     @commands.command()
     async def craftable(self, ctx):
@@ -319,9 +348,11 @@ class Economy(commands.Cog):
         string = ""
         for i in cramed["crafts"].keys():
             item = cramed["crafts"][i]
-            text= "**{0}**, Requires Item Id: **{2}** __x{1}__".format(item["Result"], item["list2"][0], item["list1"][0])
-            if len(item["list1"])>1:
-                text+= " and Item Id **{1}** __x{0}__".format(item["list2"][1], item["list1"][1])
+            list1 = find_item_from_id(item['list1'])
+            print(list1[0].name)
+            text= "**{0}**, Requires Item: **{2}** __x{1}__".format(item["Result"], item["list2"][0], list1[0].name)
+            if len(list1)>1:
+                text+= " and Item Id **{1}** __x{0}__".format(item["list2"][1], list[1].name)
             text+="\n"
             string+=text
         await ctx.send(string)
@@ -334,14 +365,17 @@ class Economy(commands.Cog):
         player.save()
 
     @commands.command()
-    async def eat(self, ctx, itemId: str):
+    async def eat(self, ctx, itemName: str):
         player = constructPlayer(ctx.author.id)
         cramed = cram()
+        itemId = find_id_from_item_name(itemName)
         if str(itemId) in cramed["Eatables"]:
             if player.inventory.has(itemId) is not False:
-                itemX = player.inventory.has(itemId)
+                itemX = player.inventory.get(itemId)
                 itemX.amount-=1
                 player.energy["Val"] += cramed["Eatables"][itemId]
+                if player.energy["Val"] > 10:
+                    player.energy["Val"] = 10
                 await ctx.send("Replenished {0} energy".format(cramed["Eatables"][itemId]))
                 player.save()
             else:
@@ -356,7 +390,7 @@ class Economy(commands.Cog):
         else:
             user = user[0]
         player = constructPlayer(user.id)
-        string = "{0}'s inventory\n".format(user.display_name)
+        string = "{0}'s inventory:\n".format(user.display_name)
         embed = discord.Embed(title="{0}'s inventory".format(user.display_name))
         for item in player.inventory.content:
             if item.exclusive:
