@@ -73,9 +73,7 @@ class Player:
         data[self.id]["Inventory"] = content_literal
         jsonUpdate(data)
 
-def find_item_from_id(self, element):
-    '''[["Frog", 3], ["Oil", 1], ["Diamond Ore", 4], ["Gold Ore", 5], ["Iron Ore", 6], ["Silver Ore", 7], ["Bronze Ore", 2], ["Nothing", 0],
-             ["Wood", 8], ["Bread", 9], ["Meat", 17]]'''
+def find_item_from_id(element):
     dict_name = {"1": "Oil", "2": "Bronze Ore", "3": "Frog", "4": "Diamond Ore", "5": "Gold Ore",
     "6": "Iron Ore", "7": "Silver Ore", "8": "Wood", "9": "Bread", "17": "Meat", "100": "Bronze Knife", "101": "Plastic", "103": "Toy Knife"}
     if isinstance(element, list):
@@ -86,6 +84,13 @@ def find_item_from_id(self, element):
                 return Item(item, item_name, 0, False)
             else:
                 return "Not found"
+    else:
+        if element in dict_name:
+            element_name = dict_name[element]
+            return Item(element, element_name, 0, False)
+        else:
+            return "Not found"
+
 
 def executeSomething():
     global data
