@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions
 import random
 from Libraries.Library import get_guild_language
+import time
 
 class Miscellaneous(commands.Cog):
 
@@ -15,8 +16,13 @@ class Miscellaneous(commands.Cog):
     async def set_language(self, ctx, language_code):
         language_code = str.lower(language_code)
         available_languages = ['fr', 'en', 'ja']
+        local = [
+        {'en': "Please use 'fr', 'en' or 'ja'", 'fr': "Utiliser 'fr', 'en' ou 'ja' comme argument", "ja": "引数は「fr」か「en」か「ja」なければいけない。"},
+        {'en': "Successfully changed language", 'fr': "Changement de langue réussi", 'ja': '言語変更成功しました'}
+        ]
+        language = get_guild_language(ctx.guild.id)
         if language_code not in available_languages:
-            await ctx.send("Please use 'fr', 'en' or 'ja'")
+            await ctx.send(local[0][language])
         else:
             with open("data/settings.Json", "r") as f:
                 x = f.read()
@@ -26,7 +32,8 @@ class Miscellaneous(commands.Cog):
             d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
             with open("data/settings.Json", "w") as file:
                 file.write(d)
-            await ctx.send("Successfully changed language")
+            language = get_guild_language(ctx.guild.id)
+            await ctx.send(local[1][language])
 
     @commands.command(pass_context=True)
     async def members(self, ctx, rolename: discord.Role):
@@ -41,7 +48,6 @@ class Miscellaneous(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        print('hey')
         with open("data/settings.Json", "r") as f:
             x = f.read()
             content = json.loads(x)
@@ -62,15 +68,21 @@ class Miscellaneous(commands.Cog):
 
     @commands.command()
     async def online(self, ctx):
+        local = [
+        {'en': "Online", 'fr': "En ligne", 'ja': "オンライン"},
+        {'en': "Shows a list of online members", 'fr': "Montre la liste des membres en ligne", 'ja': "オンラインメンバーを見せる"},
+        {'en': "Online members:", 'fr': "Membre en ligne:", 'ja': "オンラインメンバー"}
+        ]
+        language = get_guild_language(ctx.guild.id)
         mem = ctx.message.guild.members
-        embed = discord.Embed(title="Online", description="Shows a list of online members", color=0x0d20a4)
+        embed = discord.Embed(title=local[0][language], description=local[1][language], color=0x0d20a4)
         temp = ""
         for i in mem:
             k = str(i.status)
             if k == "online" or k == "idle" or k == "dnd":
                 if not i.bot:
                     temp+=i.mention+"\n"
-        embed.add_field(name="Online members:", value=temp, inline=False)
+        embed.add_field(name=local[2][language], value=temp, inline=False)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -86,11 +98,15 @@ class Miscellaneous(commands.Cog):
     @commands.command(pass_context=True)
     async def oldest(self, ctx):
         list_ids = []
+        local = [
+        {'en': " is the oldest member of the guild", 'fr': " est le member le plus vieux de la guilde", 'ja': "さんは鯖の最年長メンバーであります"},
+        ]
+        language = get_guild_language(ctx.guild.id)
         smallest = 999999999999999999999
         for i in ctx.guild.members:
-            if i.id < smallest:
+            if i.id < smallest and i.bot is False:
                 smallest = i.id
-        await ctx.send(ctx.guild.get_member(smallest).display_name + " is the oldest member of the guild")
+        await ctx.send(ctx.guild.get_member(smallest).display_name + local[0][language])
 
 
 def setup(bot):

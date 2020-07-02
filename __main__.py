@@ -36,7 +36,6 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-    
 @client.event
 async def on_message(message):
     await client.process_commands(message)
@@ -47,7 +46,7 @@ async def on_command_error(ctx, error):
         await ctx.send(":negative_squared_cross_mark: Bad Argument.")
         return
     if isinstance(error, CommandNotFound):
-        await ctx.send("Hey chill I can't do that. \n *nor do I want to tbh*")
+        await ctx.send("Hey chill I can't do that.")
         return
     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
         await ctx.send("Missing arguments")
