@@ -35,11 +35,8 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
-    with open('data/Mods.Json', "r") as f:
-        x = f.read()
-        print(json.loads(x))
 
-
+    
 @client.event
 async def on_message(message):
     await client.process_commands(message)

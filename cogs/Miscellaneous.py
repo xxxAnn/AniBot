@@ -1,21 +1,55 @@
 import discord
 import json
 from discord.ext import commands
+from discord.ext.commands import has_permissions
 import random
+from Libraries.Library import get_guild_language
 
 class Miscellaneous(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(aliases=['setlang'])
+    @has_permissions(administrator=True)
+    async def set_language(self, ctx, language_code):
+        language_code = str.lower(language_code)
+        available_languages = ['fr', 'en', 'ja']
+        if language_code not in available_languages:
+            await ctx.send("Please use 'fr', 'en' or 'ja'")
+        else:
+            with open("data/settings.Json", "r") as f:
+                x = f.read()
+                content = json.loads(x)
+                f.close()
+            content[str(ctx.guild.id)] = {"Language": language_code}
+            d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
+            with open("data/settings.Json", "w") as file:
+                file.write(d)
+            await ctx.send("Successfully changed language")
+
     @commands.command(pass_context=True)
     async def members(self, ctx, rolename: discord.Role):
+        local = [{'en': 'Members', 'ja': 'ロールのメンバー', "fr": "Membre"}, {'en': 'in ', 'fr': 'de ', 'ja': 'ロール：'}]
+        language = get_guild_language(ctx.guild.id)
         mm = ctx.message.guild.members
-        embed = discord.Embed(title="Members", description="in " + str(rolename), color=0x0d20a4)
+        embed = discord.Embed(title=local[0][language], description=local[1][language] + str(rolename), color=0x0d20a4)
         for tm in mm:
             if rolename in tm.roles:
                 embed.add_field(name=tm.display_name, value=tm.mention, inline=True)
         await ctx.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        print('hey')
+        with open("data/settings.Json", "r") as f:
+            x = f.read()
+            content = json.loads(x)
+            f.close()
+        content[str(guild.id)] = {"Language": "en"}
+        d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
+        with open("data/settings.Json", "w") as file:
+            file.write(d)
 
     @commands.command(pass_context=True)
     async def react(self, ctx, arg):
@@ -41,11 +75,11 @@ class Miscellaneous(commands.Cog):
 
     @commands.command()
     async def invite(self, ctx):
-        await ctx.send("https://discordapp.com/oauth2/authorize?client_id=618166814685265931&scope=bot&permissions=8")
+        await ctx.send("https://discord.com/oauth2/authorize?client_id=705502515491242014&scope=bot&permissions=322630")
 
     @commands.command(aliases=['8ball'])
     async def question(self, ctx, *, arg):
-        y = ["yes", "no", "probably", "definitely not", "ofc not?", "you'll soon know", "definitely", ]
+        y = ["yes", "no", "probably", "definitely not", "ofc not?", "you'll soon know", "definitely"]
         x = random.choice(y)
         await ctx.send(x)
 
