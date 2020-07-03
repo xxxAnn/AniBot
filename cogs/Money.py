@@ -12,7 +12,6 @@ import mysql.connector
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="123abc",
   database="money"
 )
 
@@ -21,7 +20,7 @@ with open('data/Money.json', 'r') as file:
     y = json.loads(x)
     mycursor = mydb.cursor()
     mycursor.execute("INSERT INTO data (jsonColumn) VALUES (%s)", (json.dumps(y),))
-    
+
 def jsonLoad():
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM data WHERE id = 1")
