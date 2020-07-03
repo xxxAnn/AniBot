@@ -7,6 +7,32 @@ from random import randint
 from datetime import datetime
 from time import sleep
 import operator
+import mysql.connector
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="123abc",
+  database="money"
+)
+
+with open('data/Money.json', 'r') as file:
+    x = file.read()
+    y = json.loads(x)
+    mycursor = mydb.cursor()
+    mycursor.execute("INSERT INTO data (jsonColumn) VALUES (%s)", (json.dumps(y),))
+    
+def jsonLoad():
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM data WHERE id = 1")
+    myresult = mycursor.fetchone()
+    return json.loads(myresult[1])
+
+
+def jsonUpdate(data):
+    mycursor = mydb.cursor()
+    mycursor.execute("UPDATE data SET jsonColumn = (%s) WHERE id = 1", (json.dumps(jsonLoad()),))
+    mydb.commit()
 
 
 lasttime = int(time.time())
@@ -147,12 +173,6 @@ def executeSomething():
                 player.save()
         jsonUpdate(data)
 
-def jsonUpdate(data):
-    d = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
-    with open("data/Money.json", "w") as file:
-        file.write(d)
-
-
 def toContentLiteral(inventoryContentItem):
     literal_list = []
     for item in inventoryContentItem:
@@ -160,11 +180,6 @@ def toContentLiteral(inventoryContentItem):
         literal_list.append(x)
     return literal_list
 
-
-def jsonLoad():
-    with open("data/Money.json", "r") as f:
-        x = f.read()
-        return json.loads(x)
 
 
 def cram():
