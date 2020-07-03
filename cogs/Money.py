@@ -25,7 +25,7 @@ def jsonLoad():
 
 def jsonUpdate(data):
     mycursor = mydb.cursor()
-    mycursor.execute("UPDATE data SET jsonColumn = (%s) WHERE id = 1", (json.dumps(data,))
+    mycursor.execute("UPDATE data SET jsonColumn = (%s) WHERE id = 1", (json.dumps(data,)))
     mydb.commit()
 
 
