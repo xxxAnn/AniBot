@@ -394,13 +394,16 @@ class Economy(commands.Cog):
         itemId = find_id_from_item_name(itemName)
         if str(itemId) in cramed["Eatables"]:
             if player.inventory.has(itemId) is not False:
-                itemX = player.inventory.get(itemId)
-                itemX.amount-=1
-                player.energy["Val"] += cramed["Eatables"][itemId]
-                if player.energy["Val"] > 10:
-                    player.energy["Val"] = 10
-                await ctx.send("Replenished {0} energy".format(cramed["Eatables"][itemId]))
-                player.save()
+                if player.inventory.get(itemId).amount>0:
+                    itemX = player.inventory.get(itemId)
+                    itemX.amount-=1
+                    player.energy["Val"] += cramed["Eatables"][itemId]
+                    if player.energy["Val"] > 10:
+                        player.energy["Val"] = 10
+                    await ctx.send("Replenished {0} energy".format(cramed["Eatables"][itemId]))
+                    player.save()
+                else:
+                    await ctx.send("Y'aint have that")
             else:
                 await ctx.send("Y'aint have that")
         else:
