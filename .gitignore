@@ -3,3 +3,5 @@ data/secret.py
 data/Money.json
 data/Mods.Json
 data/Data.json
+data/settings.json
+*.pyc
