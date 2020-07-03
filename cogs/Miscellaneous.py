@@ -24,13 +24,13 @@ class Miscellaneous(commands.Cog):
         if language_code not in available_languages:
             await ctx.send(local[0][language])
         else:
-            with open("data/settings.Json", "r") as f:
+            with open("data/settings.json", "r") as f:
                 x = f.read()
                 content = json.loads(x)
                 f.close()
             content[str(ctx.guild.id)] = {"Language": language_code}
             d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
-            with open("data/settings.Json", "w") as file:
+            with open("data/settings.json", "w") as file:
                 file.write(d)
             language = get_guild_language(ctx.guild.id)
             await ctx.send(local[1][language])
@@ -48,13 +48,13 @@ class Miscellaneous(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        with open("data/settings.Json", "r") as f:
+        with open("data/settings.json", "r") as f:
             x = f.read()
             content = json.loads(x)
             f.close()
         content[str(guild.id)] = {"Language": "en"}
         d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
-        with open("data/settings.Json", "w") as file:
+        with open("data/settings.json", "w") as file:
             file.write(d)
 
     @commands.command(pass_context=True)
