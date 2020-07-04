@@ -5,5 +5,6 @@
 All the code was written by me, most of it actually comes from Takagi-Bot 2020 and 金 Butler but a lot of it has been re-written and revamped
 ## License
 This is an open source project under GNU Affero General Public License v3.0.
-## Future info
-The bot currently uses Json to save information but I'm planning on using a database.
+## Notable Contributors 
+@Kyando2
+
