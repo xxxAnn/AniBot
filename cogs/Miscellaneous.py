@@ -3,7 +3,7 @@ import json
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 import random
-from Libraries.Library import get_guild_language
+from Libraries.Library import get_guild_language, Pages
 import time
 
 class Miscellaneous(commands.Cog):
@@ -37,14 +37,15 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(pass_context=True)
     async def members(self, ctx, rolename: discord.Role):
-        local = [{'en': 'Members', 'ja': 'ロールのメンバー', "fr": "Membre"}, {'en': 'in ', 'fr': 'de ', 'ja': 'ロール：'}]
+        local = [{'en': 'Members', 'ja': 'ロールの全員', "fr": "Membre"}, {'en': 'in ', 'fr': 'de ', 'ja': 'ロール：'}]
         language = get_guild_language(ctx.guild.id)
         mm = ctx.message.guild.members
-        embed = discord.Embed(title=local[0][language], description=local[1][language] + str(rolename), color=0x0d20a4)
-        for tm in mm:
-            if rolename in tm.roles:
-                embed.add_field(name=tm.display_name, value=tm.mention, inline=True)
-        await ctx.send(embed=embed)
+        list = []
+        for member in mm:
+            if member in rolename.members:
+                list.append(member.mention)
+        page = Pages(ctx=ctx, entries=list, custom_title=local[0][language])
+        await page.paginate()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -75,15 +76,14 @@ class Miscellaneous(commands.Cog):
         ]
         language = get_guild_language(ctx.guild.id)
         mem = ctx.message.guild.members
-        embed = discord.Embed(title=local[0][language], description=local[1][language], color=0x0d20a4)
-        temp = ""
+        temp = []
         for i in mem:
             k = str(i.status)
             if k == "online" or k == "idle" or k == "dnd":
                 if not i.bot:
-                    temp+=i.mention+"\n"
-        embed.add_field(name=local[2][language], value=temp, inline=False)
-        await ctx.send(embed=embed)
+                    temp.append(i.mention)
+        page = Pages(ctx, entries=temp, custom_title=local[0][language])
+        await page.paginate()
 
     @commands.command()
     async def invite(self, ctx):
