@@ -68,6 +68,43 @@ class Miscellaneous(commands.Cog):
         print(arg)
 
     @commands.command()
+    @has_permissions(administrator=True)
+    async def add_reaction_role(self, ctx, message_id: int, channel: discord.TextChannel, role: discord.Role, reaction):
+        message = await channel.fetch_message(message_id)
+        await message.add_reaction(reaction)
+        with open('data/reactionroles.json', 'r') as file:
+            x = file.read()
+            content = json.loads(x)
+        if str(message_id) not in content:
+            content[str(message_id)] = {reaction: role.id}
+        else:
+            content[str(message_id)][reaction] = role.id
+        with open('data/reactionroles.json', 'w') as file:
+            x = json.dumps(content)
+            file.write(x)
+        await ctx.send("Succesfully added role react")
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, playload):
+        with open('data/reactionroles.json', 'r') as file:
+            x = file.read()
+            content = json.loads(x)
+        if str(playload.message_id) in content:
+            print(playload.emoji)
+            if str(playload.emoji) in content[str(playload.message_id)]:
+                await playload.member.add_roles(self.bot.get_guild(playload.guild_id).get_role(content[str(playload.message_id)][str(playload.emoji)]))
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, playload):
+        with open('data/reactionroles.json', 'r') as file:
+            x = file.read()
+            content = json.loads(x)
+        if str(playload.message_id) in content:
+            print(playload.emoji)
+            if str(playload.emoji) in content[str(playload.message_id)]:
+                await self.bot.get_guild(playload.guild_id).get_member(playload.user_id).remove_roles(self.bot.get_guild(playload.guild_id).get_role(content[str(playload.message_id)][str(playload.emoji)]))
+
+    @commands.command()
     async def online(self, ctx):
         local = [
         {'en': "Online", 'fr': "En ligne", 'ja': "オンライン"},

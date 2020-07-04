@@ -4,4 +4,5 @@ data/Money.json
 data/Mods.Json
 data/Data.json
 data/settings.json
+data/reactionroles.json
 *.pyc
