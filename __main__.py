@@ -16,7 +16,7 @@ from discord import FFmpegPCMAudio
 from os import system
 from datetime import datetime
 from data.secret import token_const
-initial_extensions = ['cogs.Fun', 'cogs.Moderation', 'cogs.Miscellaneous', 'cogs.Money']
+initial_extensions = ['cogs.Fun', 'cogs.Moderation', 'cogs.Miscellaneous', 'cogs.Money', 'cogs.level']
 BOT_PREFIX = ("%",'-')
 TOKEN = token_const
 client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)

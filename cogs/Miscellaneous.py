@@ -82,7 +82,7 @@ class Miscellaneous(commands.Cog):
         with open('data/reactionroles.json', 'w') as file:
             x = json.dumps(content)
             file.write(x)
-        await ctx.send("Succesfully added role react")
+        await ctx.send("Succesfully added role react, make sure the bot has sufficient permissions or this will not work")
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, playload):
