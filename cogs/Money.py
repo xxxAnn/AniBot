@@ -8,6 +8,7 @@ from datetime import datetime
 from time import sleep
 import operator
 import mysql.connector
+from Libraries.Library import Pages
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -416,17 +417,18 @@ class Economy(commands.Cog):
         else:
             user = user[0]
         player = constructPlayer(user.id)
-        string = "{0}'s inventory:\n".format(user.display_name)
+        temp = []
         embed = discord.Embed(title="{0}'s inventory".format(user.display_name))
         for item in player.inventory.content:
             if item.exclusive:
                 embed.add_field(name=item.name, value="Exclusive")
-                string+=str(item.name) + ": Exclusive\n"
+                temp.append((item.name) + ": Exclusive\n")
             else:
                 embed.add_field(name=item.name, value=item.amount)
-                string+=str(item.name) + ": **x{}**\n".format(item.amount)
+                temp.append(str(item.name) + ": **x{0}**\n".format(item.amount))
         player.save()
-        await ctx.send(string)
+        page = Pages(ctx, entries=temp, custom_title="{0}'s inventory:\n".format(user.display_name))
+        await page.paginate()
 
     @commands.command()
     async def exploit(self, ctx):

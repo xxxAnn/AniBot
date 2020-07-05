@@ -62,10 +62,8 @@ class level(commands.Cog):
             if member.id in cooldown:
                 member_cooldown = cooldown[member.id]
                 if time.time() - member_cooldown > 0:
-                    print(guild_data)
                     if str(member.id) in guild_data:
                         guild_data[str(member.id)]["exp"]+=randint(15,25)
-                        print('hey')
                     else:
                         guild_data[str(member.id)] = {"exp": 0}
                     await save_guild_data(message.guild.id, guild_data)
@@ -78,15 +76,37 @@ class level(commands.Cog):
             guild_data = await load_guild_data(ctx.guild.id)
             member = ctx.author
             if str(member.id) in guild_data:
-                await ctx.send(guild_data[str(member.id)]['exp'])
+                exp = guild_data[str(member.id)]['exp']
             else:
-                guild_data[str(member.id)] = {"exp": 300}
+                guild_data[str(member.id)] = {"exp": 0}
                 await save_guild_data(ctx.guild.id, guild_data)
-                await ctx.send(guild_data[str(member.id)]['exp'])
+                exp = guild_data[str(member.id)]['exp']
+            embed=discord.Embed(title=member.display_name, description="Shows the user's experience points.", color=0x0c72df)
+            embed.add_field(name="Exp", value="{0}".format(exp), inline=False)
+            await ctx.send(embed=embed)
 
-
-
-
+    @commands.command(aliases=['ranks'])
+    async def leveltop(self, ctx):
+        guild_data = await load_guild_data(ctx.guild.id)
+        exp = {}
+        for i in guild_data:
+            if "exp" in guild_data[i]:
+                x = guild_data[i]
+                exp[i] = x["exp"]
+        sortedExp = sorted(exp.items(), key=operator.itemgetter(1))
+        sortedExp = list(reversed(sortedExp))
+        string = "```pl\n"
+        for x in range(0, 10):
+            try:
+                txt = str(sortedExp[x][0])
+            except:
+                break
+            loop_user = self.bot.get_user(int(txt))
+            val = guild_data[txt]["exp"]
+            val = f'{val:,}'.format(val=val)
+            string = string + "{" + str(x + 1) + "}     #" + loop_user.name + "\n        Exp : [" + str(val) + "] " + "\n"
+        string = string + '```'
+        await ctx.send(string)
 
 
 def setup(bot):
