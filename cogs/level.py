@@ -44,17 +44,49 @@ async def load_guild_data(guild_id: int):
 async def save_guild_data(guild_id: int, data):
     mycursor = mydb.cursor()
     mycursor.execute("UPDATE levels SET data = (%s) WHERE id = {0}".format(guild_id), (json.dumps(data),))
+    mydb.commit()
+    return "Succesfull"
 
+cooldown = {0: 0}
 
 class level(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.guild:
+            guild_data = await load_guild_data(message.guild.id)
+            member = message.author
+            if member.id in cooldown:
+                member_cooldown = cooldown[member.id]
+                if time.time() - member_cooldown > 0:
+                    print(guild_data)
+                    if str(member.id) in guild_data:
+                        guild_data[str(member.id)]["exp"]+=randint(15,25)
+                        print('hey')
+                    else:
+                        guild_data[str(member.id)] = {"exp": 0}
+                    await save_guild_data(message.guild.id, guild_data)
+            else:
+                cooldown[member.id] = time.time()
+
     @commands.command()
-    async def check_guild_data(self, ctx):
-        guild_data = await load_guild_data(ctx.guild.id)
-        await ctx.send(str(guild_data))
+    async def exp(self, ctx):
+        if ctx.guild:
+            guild_data = await load_guild_data(ctx.guild.id)
+            member = ctx.author
+            if str(member.id) in guild_data:
+                await ctx.send(guild_data[str(member.id)]['exp'])
+            else:
+                guild_data[str(member.id)] = {"exp": 300}
+                await save_guild_data(ctx.guild.id, guild_data)
+                await ctx.send(guild_data[str(member.id)]['exp'])
+
+
+
+
 
 
 def setup(bot):
