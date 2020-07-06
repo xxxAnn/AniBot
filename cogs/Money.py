@@ -172,7 +172,10 @@ def executeSomething():
                 data[i]["Energy"]["Recover"] = int(time.time())
                 player.energy["Recover"] = int(time.time())
                 player.save()
-        jsonUpdate(data)
+            if int(-1*(time.time()-(player.energy["Recover"]+300))) < 0:
+                player.energy['Recover'] = time.time()
+                player.save()
+                
 
 def toContentLiteral(inventoryContentItem):
     literal_list = []
