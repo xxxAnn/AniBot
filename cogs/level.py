@@ -48,7 +48,6 @@ async def get_guild_settings(guild_id: str):
         content[guild_id] = {'Language': 'en', 'level_cog': {'average_exp': 15, 'exp_roles': {}}}
         return_content = content[guild_id]['level_cog']
     with open('data/settings.json', 'w') as f:
-        print(content)
         x = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
         f.write(x)
     return return_content
@@ -91,7 +90,9 @@ class level(commands.Cog):
                 if time.time() - member_cooldown > 0:
                     # // Remember that the key in exp_roles is a string \\ #
                     if str(member.id) in guild_data:
-                        guild_data[str(member.id)]["exp"]+=randint(15,25)
+                        guild_settings = await get_guild_settings(message.guild.id)
+                        avrg_exp = int(guild_settings['average_exp'])
+                        guild_data[str(member.id)]["exp"]+=randint(avrg_exp-int(avrg_exp/10), avrg_exp+int(avrg_exp/10))
                     else:
                         guild_data[str(member.id)] = {"exp": 0}
                     await save_guild_data(message.guild.id, guild_data)
