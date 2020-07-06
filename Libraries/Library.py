@@ -2,6 +2,7 @@ import json
 import discord
 import asyncio
 
+
 def get_guild_language(guild_id: str):
     with open('data/settings.json', 'r') as file:
         content = file.read()
@@ -9,33 +10,12 @@ def get_guild_language(guild_id: str):
         if guild_id in settings:
             return settings[str(guild_id)]['Language']
         else:
+            settings[str(guild_id)] = {'Language': 'en'}
             return settings[str(guild_id)]['Language']
 
+
 class Pages:
-    """Implements a paginator that queries the user for the
-    pagination interface.
-    Pages are 1-index based, not 0-index based.
-    If the user does not reply within 2 minutes then the pagination
-    interface exits automatically.
-    Parameters
-    ------------
-    ctx: Context
-        The context of the command.
-    entries: List[str]
-        A list of entries to paginate.
-    per_page: int
-        How many entries show up per page.
-    show_entry_count: bool
-        Whether to show an entry count in the footer.
-    Attributes
-    -----------
-    embed: discord.Embed
-        The embed object that is being used to send pagination info.
-        Feel free to modify this externally. Only the description,
-        footer fields, and colour are internally modified.
-    permissions: discord.Permissions
-        Our permissions for the channel.
-    """
+
     def __init__(self, ctx, *, entries, per_page=12, show_entry_count=True, custom_title):
         self.bot = ctx.bot
         self.entries = entries

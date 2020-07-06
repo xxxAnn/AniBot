@@ -17,6 +17,9 @@ mydb = mysql.connector.connect(
 )
 
 
+cooldown = {0: 0}
+
+
 async def guild_in_database(guild_id: int):
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM levels")
@@ -25,6 +28,25 @@ async def guild_in_database(guild_id: int):
         if x[0] == guild_id:
             return True
     return False
+
+
+async def get_guild_settings(guild_id: str):
+    with open('data/settings.json', 'r') as f:
+        x = f.read()
+        content = json.loads(x)
+    if guild_id in content:
+        guild_full_data = content[guild_id]
+        if 'level_cog' in guild_full_data:
+            return guild_full_data['level_cog']
+        else:
+            content[guild_id]['level_cog'] = {'average_exp': 15, 'exp_roles': {}}
+            return content[guild_id]['level_cog']
+    else:
+        content[guild_id] = {'Language': 'en', 'level_cog': {'average_exp': 15, 'exp_roles': {}}}
+        return content[guild_id]['level_cog']
+    with open('data/settings.json', 'w') as f:
+        x = json.dumps(content)
+        f.write(x)
 
 
 async def load_guild_data(guild_id: int):
@@ -41,13 +63,13 @@ async def load_guild_data(guild_id: int):
         mycursor.execute("INSERT INTO levels (id, data) VALUES (%s, %s)", (guild_id, dict))
         return json.loads(dict)
 
+
 async def save_guild_data(guild_id: int, data):
     mycursor = mydb.cursor()
     mycursor.execute("UPDATE levels SET data = (%s) WHERE id = {0}".format(guild_id), (json.dumps(data),))
     mydb.commit()
-    return "Succesfull"
+    return "Succesful"
 
-cooldown = {0: 0}
 
 class level(commands.Cog):
 
