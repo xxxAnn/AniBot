@@ -16,14 +16,14 @@ mydb = mysql.connector.connect(
   password='123abc',
   database="money"
 )
-
+# // Loads data from the database \\ #
 def jsonLoad():
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM data WHERE id = 1")
     myresult = mycursor.fetchone()
     return json.loads(myresult[1])
 
-
+# // Saves data into the database \\ #
 def jsonUpdate(data):
     mycursor = mydb.cursor()
     mycursor.execute("UPDATE data SET jsonColumn = (%s) WHERE id = 1", (json.dumps(data),))
@@ -37,21 +37,26 @@ class Inventory:
     def __init__(self, content, content_literal):
         self.content = content
         self.legacy_deprecated_content_literal = content_literal
-
+    # // Checks if the item is in the inventory and returns the item if it is \\ #
     def has(self, selectid: str):
         for item in self.content:
             if str(item.id) == selectid:
                 return item
         return False
-
+    # // Returns the item \\ #
     def get(self, selectid: str):
         for item in self.content:
             if str(item.id) == selectid:
                 return item
         return None
-
+    # // Adds item to inventory \\ #
     def add(self, item):
+        for i in self.content:
+            if i.id == item.id:
+                i.amount+=item.amount
+                return "Added item"
         self.content.append(item)
+        return "Added item"
 
 class Shop:
     def __init__(self, owner, inv, name):
@@ -65,6 +70,7 @@ class Shop:
         data = jsonLoad()
         content_literal = toContentLiteral(self.inv.content)
         data["Shops"][self.id]["Inventory"] = content_literal
+        jsonUpdate(data)
 
 
 class Item:

@@ -1,5 +1,6 @@
 import discord, os
 from discord.ext import commands
+from discord.ext.commands import has_permissions
 import time
 import json
 import random
@@ -19,7 +20,7 @@ mydb = mysql.connector.connect(
 
 cooldown = {0: 0}
 
-
+# // Checks if the guild is in database \\ #
 async def guild_in_database(guild_id: int):
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM levels")
@@ -29,26 +30,30 @@ async def guild_in_database(guild_id: int):
             return True
     return False
 
-
+# // Returns the guild settings from the settings.json file \\ #
 async def get_guild_settings(guild_id: str):
+    return_content = None
+    guild_id = str(guild_id)
     with open('data/settings.json', 'r') as f:
         x = f.read()
         content = json.loads(x)
     if guild_id in content:
         guild_full_data = content[guild_id]
         if 'level_cog' in guild_full_data:
-            return guild_full_data['level_cog']
+            return_content = guild_full_data['level_cog']
         else:
             content[guild_id]['level_cog'] = {'average_exp': 15, 'exp_roles': {}}
-            return content[guild_id]['level_cog']
+            return_content = content[guild_id]['level_cog']
     else:
         content[guild_id] = {'Language': 'en', 'level_cog': {'average_exp': 15, 'exp_roles': {}}}
-        return content[guild_id]['level_cog']
+        return_content = content[guild_id]['level_cog']
     with open('data/settings.json', 'w') as f:
-        x = json.dumps(content)
+        print(content)
+        x = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
         f.write(x)
+    return return_content
 
-
+# // Loads the guild's data from the MySQL database \\ #
 async def load_guild_data(guild_id: int):
     in_database = await guild_in_database(guild_id)
     if in_database:
@@ -63,7 +68,7 @@ async def load_guild_data(guild_id: int):
         mycursor.execute("INSERT INTO levels (id, data) VALUES (%s, %s)", (guild_id, dict))
         return json.loads(dict)
 
-
+# // Saves the data into the MySQL database \\ #
 async def save_guild_data(guild_id: int, data):
     mycursor = mydb.cursor()
     mycursor.execute("UPDATE levels SET data = (%s) WHERE id = {0}".format(guild_id), (json.dumps(data),))
@@ -84,6 +89,7 @@ class level(commands.Cog):
             if member.id in cooldown:
                 member_cooldown = cooldown[member.id]
                 if time.time() - member_cooldown > 0:
+                    # // Remember that the key in exp_roles is a string \\ #
                     if str(member.id) in guild_data:
                         guild_data[str(member.id)]["exp"]+=randint(15,25)
                     else:
@@ -129,6 +135,52 @@ class level(commands.Cog):
             string = string + "{" + str(x + 1) + "}     #" + loop_user.name + "\n        Exp : [" + str(val) + "] " + "\n"
         string = string + '```'
         await ctx.send(string)
+
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def set_exp_gain(self, ctx, value: int):
+        guild_settings = await get_guild_settings(ctx.guild.id)
+        with open('data/settings.json', 'r') as f:
+            x = f.read()
+            content = json.loads(x)
+        content[str(ctx.guild.id)]['level_cog']['average_exp'] = value
+        with open('data/settings.json', 'w') as f:
+            x = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
+            f.write(x)
+            await ctx.send("Successfully changed exp gain")
+
+
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def create_exp_role(self, ctx, exp: int, role: discord.Role):
+        exp = str(exp)
+        guild_settings = await get_guild_settings(ctx.guild.id)
+        with open('data/settings.json', 'r') as f:
+            x = f.read()
+            content = json.loads(x)
+        content[str(ctx.guild.id)]['level_cog']['exp_roles'][exp] = int(role.id)
+        with open('data/settings.json', 'w') as f:
+            x = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
+            f.write(x)
+            await ctx.send("Successfully added level role")
+
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def delete_exp_role(self, ctx, exp: int):
+        exp = str(exp)
+        guild_settings = await get_guild_settings(ctx.guild.id)
+        with open('data/settings.json', 'r') as f:
+            x = f.read()
+            content = json.loads(x)
+        if exp in content[str(ctx.guild.id)]['level_cog']['exp_roles']:
+            content[str(ctx.guild.id)]['level_cog']['exp_roles'].pop(exp)
+        else:
+            await ctx.send("No such binding was found")
+        with open('data/settings.json', 'w') as f:
+            x = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
+            f.write(x)
+            await ctx.send("Successfully removed level role")
+
 
 
 def setup(bot):

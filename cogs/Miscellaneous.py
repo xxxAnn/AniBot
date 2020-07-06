@@ -28,7 +28,7 @@ class Miscellaneous(commands.Cog):
                 x = f.read()
                 content = json.loads(x)
                 f.close()
-            content[str(ctx.guild.id)] = {"Language": language_code}
+            content[str(ctx.guild.id)]['Language'] = language_code
             d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
             with open("data/settings.json", "w") as file:
                 file.write(d)
