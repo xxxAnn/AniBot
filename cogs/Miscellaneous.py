@@ -3,7 +3,7 @@ import json
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 import random
-from Libraries.Library import get_guild_language
+from Libraries.Library import get_guild_language, Pages
 import time
 
 class Miscellaneous(commands.Cog):
@@ -28,7 +28,7 @@ class Miscellaneous(commands.Cog):
                 x = f.read()
                 content = json.loads(x)
                 f.close()
-            content[str(ctx.guild.id)] = {"Language": language_code}
+            content[str(ctx.guild.id)]['Language'] = language_code
             d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
             with open("data/settings.json", "w") as file:
                 file.write(d)
@@ -37,14 +37,15 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(pass_context=True)
     async def members(self, ctx, rolename: discord.Role):
-        local = [{'en': 'Members', 'ja': 'ロールのメンバー', "fr": "Membre"}, {'en': 'in ', 'fr': 'de ', 'ja': 'ロール：'}]
+        local = [{'en': 'Members', 'ja': 'ロールの全員', "fr": "Membre"}, {'en': 'in ', 'fr': 'de ', 'ja': 'ロール：'}]
         language = get_guild_language(ctx.guild.id)
         mm = ctx.message.guild.members
-        embed = discord.Embed(title=local[0][language], description=local[1][language] + str(rolename), color=0x0d20a4)
-        for tm in mm:
-            if rolename in tm.roles:
-                embed.add_field(name=tm.display_name, value=tm.mention, inline=True)
-        await ctx.send(embed=embed)
+        list = []
+        for member in mm:
+            if member in rolename.members:
+                list.append(member.mention)
+        page = Pages(ctx=ctx, entries=list, custom_title=local[0][language])
+        await page.paginate()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -67,6 +68,43 @@ class Miscellaneous(commands.Cog):
         print(arg)
 
     @commands.command()
+    @has_permissions(administrator=True)
+    async def add_reaction_role(self, ctx, message_id: int, channel: discord.TextChannel, role: discord.Role, reaction):
+        message = await channel.fetch_message(message_id)
+        await message.add_reaction(reaction)
+        with open('data/reactionroles.json', 'r') as file:
+            x = file.read()
+            content = json.loads(x)
+        if str(message_id) not in content:
+            content[str(message_id)] = {reaction: role.id}
+        else:
+            content[str(message_id)][reaction] = role.id
+        with open('data/reactionroles.json', 'w') as file:
+            x = json.dumps(content)
+            file.write(x)
+        await ctx.send("Succesfully added role react, make sure the bot has sufficient permissions or this will not work")
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, playload):
+        with open('data/reactionroles.json', 'r') as file:
+            x = file.read()
+            content = json.loads(x)
+        if str(playload.message_id) in content:
+            print(playload.emoji)
+            if str(playload.emoji) in content[str(playload.message_id)]:
+                await playload.member.add_roles(self.bot.get_guild(playload.guild_id).get_role(content[str(playload.message_id)][str(playload.emoji)]))
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, playload):
+        with open('data/reactionroles.json', 'r') as file:
+            x = file.read()
+            content = json.loads(x)
+        if str(playload.message_id) in content:
+            print(playload.emoji)
+            if str(playload.emoji) in content[str(playload.message_id)]:
+                await self.bot.get_guild(playload.guild_id).get_member(playload.user_id).remove_roles(self.bot.get_guild(playload.guild_id).get_role(content[str(playload.message_id)][str(playload.emoji)]))
+
+    @commands.command()
     async def online(self, ctx):
         local = [
         {'en': "Online", 'fr': "En ligne", 'ja': "オンライン"},
@@ -75,15 +113,14 @@ class Miscellaneous(commands.Cog):
         ]
         language = get_guild_language(ctx.guild.id)
         mem = ctx.message.guild.members
-        embed = discord.Embed(title=local[0][language], description=local[1][language], color=0x0d20a4)
-        temp = ""
+        temp = []
         for i in mem:
             k = str(i.status)
             if k == "online" or k == "idle" or k == "dnd":
                 if not i.bot:
-                    temp+=i.mention+"\n"
-        embed.add_field(name=local[2][language], value=temp, inline=False)
-        await ctx.send(embed=embed)
+                    temp.append(i.mention)
+        page = Pages(ctx, entries=temp, custom_title=local[0][language])
+        await page.paginate()
 
     @commands.command()
     async def invite(self, ctx):

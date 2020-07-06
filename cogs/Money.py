@@ -8,6 +8,7 @@ from datetime import datetime
 from time import sleep
 import operator
 import mysql.connector
+from Libraries.Library import Pages
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -15,14 +16,14 @@ mydb = mysql.connector.connect(
   password='123abc',
   database="money"
 )
-
+# // Loads data from the database \\ #
 def jsonLoad():
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM data WHERE id = 1")
     myresult = mycursor.fetchone()
     return json.loads(myresult[1])
 
-
+# // Saves data into the database \\ #
 def jsonUpdate(data):
     mycursor = mydb.cursor()
     mycursor.execute("UPDATE data SET jsonColumn = (%s) WHERE id = 1", (json.dumps(data),))
@@ -36,21 +37,26 @@ class Inventory:
     def __init__(self, content, content_literal):
         self.content = content
         self.legacy_deprecated_content_literal = content_literal
-
+    # // Checks if the item is in the inventory and returns the item if it is \\ #
     def has(self, selectid: str):
         for item in self.content:
             if str(item.id) == selectid:
                 return item
         return False
-
+    # // Returns the item \\ #
     def get(self, selectid: str):
         for item in self.content:
             if str(item.id) == selectid:
                 return item
         return None
-
+    # // Adds item to inventory \\ #
     def add(self, item):
+        for i in self.content:
+            if i.id == item.id:
+                i.amount+=item.amount
+                return "Added item"
         self.content.append(item)
+        return "Added item"
 
 class Shop:
     def __init__(self, owner, inv, name):
@@ -64,6 +70,7 @@ class Shop:
         data = jsonLoad()
         content_literal = toContentLiteral(self.inv.content)
         data["Shops"][self.id]["Inventory"] = content_literal
+        jsonUpdate(data)
 
 
 class Item:
@@ -165,7 +172,10 @@ def executeSomething():
                 data[i]["Energy"]["Recover"] = int(time.time())
                 player.energy["Recover"] = int(time.time())
                 player.save()
-        jsonUpdate(data)
+            if int(-1*(time.time()-(player.energy["Recover"]+300))) < 0:
+                player.energy['Recover'] = time.time()
+                player.save()
+                
 
 def toContentLiteral(inventoryContentItem):
     literal_list = []
@@ -416,17 +426,18 @@ class Economy(commands.Cog):
         else:
             user = user[0]
         player = constructPlayer(user.id)
-        string = "{0}'s inventory:\n".format(user.display_name)
+        temp = []
         embed = discord.Embed(title="{0}'s inventory".format(user.display_name))
         for item in player.inventory.content:
             if item.exclusive:
                 embed.add_field(name=item.name, value="Exclusive")
-                string+=str(item.name) + ": Exclusive\n"
+                temp.append((item.name) + ": Exclusive\n")
             else:
                 embed.add_field(name=item.name, value=item.amount)
-                string+=str(item.name) + ": **x{}**\n".format(item.amount)
+                temp.append(str(item.name) + ": **x{0}**\n".format(item.amount))
         player.save()
-        await ctx.send(string)
+        page = Pages(ctx, entries=temp, custom_title="{0}'s inventory:\n".format(user.display_name))
+        await page.paginate()
 
     @commands.command()
     async def exploit(self, ctx):
