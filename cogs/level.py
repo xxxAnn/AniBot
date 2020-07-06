@@ -90,9 +90,17 @@ class level(commands.Cog):
                 if time.time() - member_cooldown > 0:
                     # // Remember that the key in exp_roles is a string \\ #
                     if str(member.id) in guild_data:
+                        before_exp = guild_data[str(member.id)]["exp"]
                         guild_settings = await get_guild_settings(message.guild.id)
                         avrg_exp = int(guild_settings['average_exp'])
                         guild_data[str(member.id)]["exp"]+=randint(avrg_exp-int(avrg_exp/10), avrg_exp+int(avrg_exp/10))
+                        after_exp = guild_data[str(member.id)]["exp"]
+                        for exp_required in guild_settings['exp_roles'].keys():
+                            exp_required = int(exp_required)
+                            if before_exp<exp_required and after_exp>exp_required:
+                                role = message.guild.get_role(int(guild_settings['exp_roles'][str(exp_required)]))
+                                await member.add_roles(role)
+                                await message.channel.send("You've been awarded the {0} role".format(role.mention))
                     else:
                         guild_data[str(member.id)] = {"exp": 0}
                     await save_guild_data(message.guild.id, guild_data)
