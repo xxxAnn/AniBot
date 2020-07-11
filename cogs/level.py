@@ -10,18 +10,21 @@ from time import sleep
 import operator
 import mysql.connector
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password='123abc',
-  database="money"
-)
-
 
 cooldown = {0: 0}
 
+# // returns a sql
+async def get_sql(host_value='localhost', user_value='root', password_value='123abc', database_value='money'):
+    return mysql.connector.connect(
+      host=host_value,
+      user=user_value,
+      password=password_value,
+      database=database_value
+    )
+
 # // Checks if the guild is in database \\ #
 async def guild_in_database(guild_id: int):
+    mydb = await get_sql()
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM levels")
     for x in mycursor:
@@ -54,6 +57,7 @@ async def get_guild_settings(guild_id: str):
 
 # // Loads the guild's data from the MySQL database \\ #
 async def load_guild_data(guild_id: int):
+    mydb = await get_sql()
     in_database = await guild_in_database(guild_id)
     if in_database:
         mycursor = mydb.cursor()
@@ -69,6 +73,12 @@ async def load_guild_data(guild_id: int):
 
 # // Saves the data into the MySQL database \\ #
 async def save_guild_data(guild_id: int, data):
+    mydb = mysql.connector.connect(
+      host="localhost",
+      user="root",
+      password='123abc',
+      database="money"
+    )
     mycursor = mydb.cursor()
     mycursor.execute("UPDATE levels SET data = (%s) WHERE id = {0}".format(guild_id), (json.dumps(data),))
     mydb.commit()

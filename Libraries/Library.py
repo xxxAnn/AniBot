@@ -1,7 +1,7 @@
 import json
 import discord
 import asyncio
-
+import mysql.connector
 
 def get_guild_language(guild_id: str):
     with open('data/settings.json', 'r') as file:
@@ -13,6 +13,30 @@ def get_guild_language(guild_id: str):
             settings[str(guild_id)] = {'Language': 'en'}
             return settings[str(guild_id)]['Language']
 
+class sqlClient:
+
+    def __init__(self, host_value='localhost', user_value='root', password_value='123abc', database_value='money'):
+        mydb = mysql.connector.connect(
+          host=host_value,
+          user=user_value,
+          password=password_value,
+          database=database_value
+        )
+        self.connection = mydb
+
+    def end(self):
+        self.connection.close()
+
+    def update(self, table: str, update_column: str, check_column: str, check_value: str, data):
+        mycursor = self.connection.cursor()
+        mycursor.execute("UPDATE {0} SET {1} = (%s) WHERE {2} = {3}".format(table, update_column, check_column, check_value), (data,))
+        self.connection.commit()
+
+    def select(self, table: str, check_column: str, check_value: str):
+        mycursor = self.connection.cursor()
+        mycursor.execute("SELECT * FROM {0} WHERE {1} = {2}".format(table, check_column, check_value))
+        myresult = mycursor.fetchone()
+        return myresult
 
 class Pages:
 
