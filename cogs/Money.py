@@ -8,26 +8,21 @@ from datetime import datetime
 from time import sleep
 import operator
 import mysql.connector
-from Libraries.Library import Pages
+from Libraries.Library import Pages, sqlClient
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password='123abc',
-  database="money"
-)
+
 # // Loads data from the database \\ #
 def jsonLoad():
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM data WHERE id = 1")
-    myresult = mycursor.fetchone()
-    return json.loads(myresult[1])
+    client = sqlClient()
+    result = client.select("data", "id", "1")
+    client.end()
+    return json.loads(result[1])
 
 # // Saves data into the database \\ #
 def jsonUpdate(data):
-    mycursor = mydb.cursor()
-    mycursor.execute("UPDATE data SET jsonColumn = (%s) WHERE id = 1", (json.dumps(data),))
-    mydb.commit()
+    client = sqlClient()
+    client.update("data", "jsonColumn", "id", "1", json.dumps(data))
+    client.end()
 
 
 lasttime = int(time.time())
@@ -175,7 +170,7 @@ def executeSomething():
             if int(-1*(time.time()-(player.energy["Recover"]+300))) < 0:
                 player.energy['Recover'] = time.time()
                 player.save()
-                
+
 
 def toContentLiteral(inventoryContentItem):
     literal_list = []
