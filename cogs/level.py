@@ -29,7 +29,7 @@ async def guild_in_database(guild_id: int):
     mycursor = mydb.cursor(buffered=True)
     mycursor.execute("SELECT * FROM levels")
     for x in mycursor:
-        # // print(str(x[0]) + "\n" + str(guild_id) + "\n\n")
+        # print(str(x[0]) + "\n" + str(guild_id) + "\n\n")
         if x[0] == guild_id:
             return True
     return False
@@ -66,10 +66,10 @@ async def load_guild_data(guild_id: int):
         myresult = mycursor.fetchone()
         return json.loads(myresult[1])
     else:
-        print('hey, that guild is new')
         dict = json.dumps({'0': '0'})
         mycursor = mydb.cursor(buffered=True)
         mycursor.execute("INSERT INTO levels (id, data) VALUES (%s, %s)", (guild_id, dict))
+        mydb.commit()
         return json.loads(dict)
 
 # // Saves the data into the MySQL database \\ #
