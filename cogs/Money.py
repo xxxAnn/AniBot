@@ -7,6 +7,7 @@ from random import randint
 from datetime import datetime
 from time import sleep
 import operator
+import asyncio
 import mysql.connector
 from Libraries.Library import Pages, sqlClient
 
@@ -28,10 +29,27 @@ def jsonUpdate(data):
 lasttime = int(time.time())
 
 
+class Item:
+    def __init__(self, id, name, amount, exclusive):
+        self.id = str(id)
+        self.name = name
+        self.amount = amount
+        self.exclusive = exclusive
+
+
 class Inventory:
     def __init__(self, content, content_literal):
         self.content = content
-        self.legacy_deprecated_content_literal = content_literal
+        self.deprecated_content_literal = content_literal # // This will be removed soon because I only use it for 1 thing
+
+    # // Adds item to inventory \\ #
+    def __add__(self, item: Item):
+        for i in self.content:
+            if i.id == item.id:
+                i.amount+=item.amount
+                return "Added item"
+        self.content.append(item)
+        return "Added item"
     # // Checks if the item is in the inventory and returns the item if it is \\ #
     def has(self, selectid: str):
         for item in self.content:
@@ -44,14 +62,6 @@ class Inventory:
             if str(item.id) == selectid:
                 return item
         return None
-    # // Adds item to inventory \\ #
-    def add(self, item):
-        for i in self.content:
-            if i.id == item.id:
-                i.amount+=item.amount
-                return "Added item"
-        self.content.append(item)
-        return "Added item"
 
 class Shop:
     def __init__(self, owner, inv, name):
@@ -66,14 +76,6 @@ class Shop:
         content_literal = toContentLiteral(self.inv.content)
         data["Shops"][self.id]["Inventory"] = content_literal
         jsonUpdate(data)
-
-
-class Item:
-    def __init__(self, id, name, amount, exclusive):
-        self.id = str(id)
-        self.name = name
-        self.amount = amount
-        self.exclusive = exclusive
 
 
 class Player:
@@ -107,6 +109,7 @@ def find_id_from_item_name(name: str):
     "silver_ore": "7",
     "wood": "8",
     "bread": "9",
+    "carp": "10",
     "meat": "17",
     "bronze_knife": "100",
     "plastic": "101",
@@ -131,6 +134,7 @@ def find_item_from_id(element):
     "7": "Silver Ore",
     "8": "Wood",
     "9": "Bread",
+    "10": "Carp",
     "17": "Meat",
     "100": "Bronze Knife",
     "101": "Plastic",
@@ -216,6 +220,8 @@ class Economy(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.fish_activated = {}
+        self.fishermen = {}
 
     @commands.command()
     async def idtoname(self, ctx, id: str):
@@ -447,7 +453,6 @@ class Economy(commands.Cog):
             moneyMulti = 1
             result = random.choices(items, weighs)
             result = result[0]
-            print(result)
             for item in cramed["itemMulti"].keys():
                 if player.inventory.has(item) is not False:
                     item2 = player.inventory.get(item)
@@ -474,6 +479,64 @@ class Economy(commands.Cog):
         else:
             await ctx.send("No energy sowwy")
         player.save()
+
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def fish(self, ctx):
+        self.fish_activated[ctx.author.id] = 0
+        embed = discord.Embed(title="Fishing", description="Click the reaction at the right time to catch a fish")
+        embed.add_field(name="Indicator", value="🔵")
+        fish_message = await ctx.send(embed=embed)
+        self.fishermen[fish_message.id] = ctx.author.id
+        await fish_message.add_reaction("🎣")
+        delay = randint(5, 25)
+        await asyncio.sleep(delay)
+        self.fish_activated[ctx.author.id] = 1
+        new_embed = discord.Embed(title="Fishing", description="Click the reaction at the right time to catch a fish")
+        new_embed.add_field(name="Indicator", value="🐟")
+        await fish_message.edit(embed=new_embed)
+        await asyncio.sleep(2)
+        self.fish_activated[ctx.author.id] = 2
+        await asyncio.sleep(5)
+        await fish_message.clear_reactions()
+
+
+    async def check_for_fishing(self, playload):
+        id = playload.user_id
+        if self.fish_activated[id] == 0:
+            message = await self.get_message_from_playload(playload)
+            await message.clear_reactions()
+            channel = self.bot.get_channel(playload.channel_id)
+            await channel.send("Too quick")
+        elif self.fish_activated[id] == 1:
+            message = await self.get_message_from_playload(playload)
+            await message.clear_reactions()
+            # / Give the fish
+            items = ["Carp"]
+            weighs = [1]
+            player = constructPlayer(playload.user_id)
+            carp = Item(10, "Carp", 1, False)
+            player.inventory + carp
+            player.save()
+            await message.channel.send("You got a Carp")
+        elif self.fish_activated[id] == 2:
+            message = await self.get_message_from_playload(playload)
+            channel = self.bot.get_channel(playload.channel_id)
+            await message.clear_reactions
+            channel.send("Too slow")
+
+
+    async def get_message_from_playload(self, playload):
+        channel = self.bot.get_channel(playload.channel_id)
+        return await channel.fetch_message(playload.message_id)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, playload):
+        emoji = str(playload.emoji)
+        if emoji == "🎣":
+            if playload.message_id in self.fishermen:
+                if self.fishermen[playload.message_id] == playload.user_id:
+                    await self.check_for_fishing(playload=playload)
 
     @commands.Cog.listener()
     async def on_message(self, message):
