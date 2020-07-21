@@ -3,7 +3,7 @@ import json
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 import random
-from Libraries.Library import get_guild_language, Pages, command_activated
+from Libraries.Library import get_guild_language, Pages, command_activated, embed_template
 import time
 import inspect
 
@@ -35,7 +35,8 @@ class Miscellaneous(commands.Cog):
             with open("data/settings.json", "w") as file:
                 file.write(d)
             language = get_guild_language(ctx.guild.id)
-            await ctx.send(local[1][language])
+            embed = await embed_template("Set Language", local[1][language])
+            await ctx.send(embed=embed)
 
     @commands.command(pass_context=True)
     async def members(self, ctx, rolename: discord.Role):
@@ -147,19 +148,22 @@ class Miscellaneous(commands.Cog):
         d = json.dumps(settings, sort_keys=True, indent=4, separators=(',', ': '))
         with open("data/settings.json", "w") as file:
             file.write(d)
-        await ctx.send("Toggled command")
+        embed = await embed_template("Toggle command", "Command was successfully toggled")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def invite(self, ctx):
         if not await command_activated(ctx, str(inspect.stack()[0][3])): return
-        await ctx.send("https://discord.com/oauth2/authorize?client_id=705502515491242014&scope=bot&permissions=322630")
+        embed = await embed_template("Invite", "[Click here to add the bot to your server](https://discord.com/oauth2/authorize?client_id=705502515491242014&scope=bot&permissions=322630)")
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=['8ball'])
     async def question(self, ctx, *, arg):
         if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         y = ["yes", "no", "probably", "definitely not", "ofc not?", "you'll soon know", "definitely"]
         x = random.choice(y)
-        await ctx.send(x)
+        embed = await embed_template("Question", x)
+        await ctx.send(embed=embed)
 
     @commands.command(pass_context=True)
     async def oldest(self, ctx):
@@ -173,7 +177,8 @@ class Miscellaneous(commands.Cog):
         for i in ctx.guild.members:
             if i.id < smallest and i.bot is False:
                 smallest = i.id
-        await ctx.send(ctx.guild.get_member(smallest).display_name + local[0][language])
+        embed = await embed_template("Oldest", ctx.guild.get_member(smallest).display_name + local[0][language])
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def privacy_policy(self, ctx):

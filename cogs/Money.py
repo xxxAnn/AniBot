@@ -9,7 +9,7 @@ from time import sleep
 import operator
 import asyncio
 import mysql.connector
-from Libraries.Library import Pages, sqlClient
+from Libraries.Library import Pages, sqlClient, command_activated
 
 
 # // Loads data from the database \\ #
@@ -225,10 +225,12 @@ class Economy(commands.Cog):
 
     @commands.command()
     async def idtoname(self, ctx, id: str):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         await ctx.send(find_item_from_id(id).name)
 
     @commands.command()
     async def bal(self, ctx, *user: discord.Member):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         if not user:
             user = ctx.message.author
         else:
@@ -242,6 +244,7 @@ class Economy(commands.Cog):
 
     @commands.command()
     async def pay(self, ctx, user: discord.Member, amount):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         amount = amount.replace(",", "")
         amount = int(amount)
         if not amount < 0 or ctx.message.author.id == 331431342438875137:
@@ -262,6 +265,7 @@ class Economy(commands.Cog):
 
     @commands.command()
     async def top(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         global data
         data = jsonLoad()
         exp = {}
@@ -299,12 +303,14 @@ class Economy(commands.Cog):
         if ctx.message.author.id == 331431342438875137:
             player = constructPlayer(ctx.author.id)
             name = " ".join(name)
-            player.inventory.content.append({"Amount": 1, "Exclusive": True, "Name": name, "Id": id})
+            player.inventory + Item(Amount=1, Exclusive=True, Name=name, Id=id)
             player.save()
         else:
             await ctx.send("Sorry lol you can't do that")
+
     @commands.command()
     async def craft(self, ctx, itemName, amountx=1):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         def craft(result, ctx, items, amounts, resultAmount, resultId, player):
             ranX = False
             if len(items) > 1:
@@ -377,6 +383,7 @@ class Economy(commands.Cog):
 
     @commands.command()
     async def craftable(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         global data
         data= jsonLoad()
         cramed = cram()
@@ -400,6 +407,7 @@ class Economy(commands.Cog):
 
     @commands.command()
     async def eat(self, ctx, itemName: str):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         player = constructPlayer(ctx.author.id)
         cramed = cram()
         itemId = find_id_from_item_name(itemName)
@@ -422,6 +430,7 @@ class Economy(commands.Cog):
 
     @commands.command(aliases=['inv'])
     async def inventory(self, ctx, *user: discord.Member):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         if not user:
             user = ctx.message.author
         else:
@@ -442,6 +451,7 @@ class Economy(commands.Cog):
 
     @commands.command()
     async def exploit(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         cramed = cram()
         player = constructPlayer(ctx.author.id)
         if player.energy["Val"]>0:
@@ -483,6 +493,7 @@ class Economy(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def fish(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         self.fish_activated[ctx.author.id] = 0
         embed = discord.Embed(title="Fishing", description="Click the reaction at the right time to catch a fish")
         embed.add_field(name="Indicator", value="🔵")

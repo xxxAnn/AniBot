@@ -3,6 +3,11 @@ import discord
 import asyncio
 import mysql.connector
 
+async def embed_template(name, value):
+    embed = discord.Embed(color=0xdd1313)
+    embed.add_field(name=name, value=value)
+    return embed
+
 def get_guild_language(guild_id: str):
     with open('data/settings.json', 'r') as file:
         content = file.read()

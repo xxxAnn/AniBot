@@ -56,7 +56,7 @@ async def on_command_error(ctx, error):
         return
     if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
         embed = discord.Embed(color=0xdd1313)
-        embed.set_image(url="https://thumbs.gfycat.com/DismalWarmArmadillo-max-1mb.gif")
+        embed.set_image(url="https://media1.tenor.com/images/f1187d7f7d745182879263e0b125e2eb/tenor.gif?itemid=7906629")
         await ctx.send(embed=embed)
         await ctx.send("Something unexpected happened")
         raise error

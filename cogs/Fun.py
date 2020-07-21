@@ -5,6 +5,7 @@ from Libraries.Library import get_guild_language, Pages, command_activated
 import time
 import inspect
 
+
 class Fun(commands.Cog):
 
     def __init__(self, bot):
