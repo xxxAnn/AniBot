@@ -7,9 +7,12 @@ from random import randint
 from datetime import datetime
 from time import sleep
 import operator
+import asyncio
 import mysql.connector
-from Libraries.Library import Pages, sqlClient
-
+from Libraries.Library import Pages, sqlClient, command_activated, embed_template
+from Libraries.Economy.items import ItemHandler
+from Libraries.Economy.player import PlayerHandler
+import inspect
 
 # // Loads data from the database \\ #
 def jsonLoad():
@@ -27,139 +30,12 @@ def jsonUpdate(data):
 
 lasttime = int(time.time())
 
-
-class Inventory:
-    def __init__(self, content, content_literal):
-        self.content = content
-        self.legacy_deprecated_content_literal = content_literal
-    # // Checks if the item is in the inventory and returns the item if it is \\ #
-    def has(self, selectid: str):
-        for item in self.content:
-            if str(item.id) == selectid:
-                return item
-        return False
-    # // Returns the item \\ #
-    def get(self, selectid: str):
-        for item in self.content:
-            if str(item.id) == selectid:
-                return item
-        return None
-    # // Adds item to inventory \\ #
-    def add(self, item):
-        for i in self.content:
-            if i.id == item.id:
-                i.amount+=item.amount
-                return "Added item"
-        self.content.append(item)
-        return "Added item"
-
-class Shop:
-    def __init__(self, owner, inv, name):
-        self.owner = owner
-        self.inv = inv
-        self.name = name
-        self.id = str(id)
-
-    def save(self):
-        global data
-        data = jsonLoad()
-        content_literal = toContentLiteral(self.inv.content)
-        data["Shops"][self.id]["Inventory"] = content_literal
-        jsonUpdate(data)
-
-
-class Item:
-    def __init__(self, id, name, amount, exclusive):
-        self.id = str(id)
-        self.name = name
-        self.amount = amount
-        self.exclusive = exclusive
-
-
-class Player:
-
-    def __init__(self, inventory, money, energy, id):
-        self.inventory = inventory
-        self.money = money
-        self.energy = energy
-        self.id = str(id)
-
-    def save(self):
-        global data
-        data = jsonLoad()
-        if self.id not in data:
-            data[self.id] = {"Energy": None, "Money": None, "Inventory": None}
-        data[self.id]["Energy"] = self.energy
-        data[self.id]["Money"] = self.money
-        content_literal = toContentLiteral(self.inventory.content)
-        data[self.id]["Inventory"] = content_literal
-        jsonUpdate(data)
-
-
-def find_id_from_item_name(name: str):
-    id_dict = {
-    "oil": "1",
-    "bronze_ore": "2",
-    "frog": "3",
-    "diamond_ore": "4",
-    "gold_ore": "5",
-    "iron_ore": "6",
-    "silver_ore": "7",
-    "wood": "8",
-    "bread": "9",
-    "meat": "17",
-    "bronze_knife": "100",
-    "plastic": "101",
-    "toy_knife": "103",
-    "diamond_sword": "104",
-    "silver_sword": "105"}
-    name = str.lower(name)
-    if name in id_dict:
-        return(id_dict[name])
-    else:
-        return "Not Found"
-
-
-def find_item_from_id(element):
-    dict_name = {
-    "1": "Oil",
-    "2": "Bronze Ore",
-    "3": "Frog",
-    "4": "Diamond Ore",
-    "5": "Gold Ore",
-    "6": "Iron Ore",
-    "7": "Silver Ore",
-    "8": "Wood",
-    "9": "Bread",
-    "17": "Meat",
-    "100": "Bronze Knife",
-    "101": "Plastic",
-    "103": "Toy Knife",
-    "104": "Diamond Sword",
-    "105": "Silver Sword"}
-    if isinstance(element, list):
-        new_list = []
-        for item in element:
-            if item in dict_name:
-                item_name = dict_name[item]
-                new_list.append(Item(item, item_name, 0, False))
-            else:
-                return "Not found"
-            return new_list
-    else:
-        if element in dict_name:
-            element_name = dict_name[element]
-            return Item(element, element_name, 0, False)
-        else:
-            return "Not found"
-
-
 def executeSomething():
     global data
     data = jsonLoad()
     for i in data.keys():
         if "Energy" in data[i]:
-            player = constructPlayer(i)
+            player = PlayerHandler.constructPlayer(i)
             id = int(i)
             if int(time.time()) - data[i]["Energy"]["Recover"] > 299:
                 data[i]["Energy"]["Val"] = 10
@@ -172,63 +48,35 @@ def executeSomething():
                 player.save()
 
 
-def toContentLiteral(inventoryContentItem):
-    literal_list = []
-    for item in inventoryContentItem:
-        x = {"Id": item.id, "Name": item.name, "Amount": item.amount, "Exclusive": item.exclusive}
-        literal_list.append(x)
-    return literal_list
-
-
-
 def cram():
     with open("data/Cram.json", "r") as f:
         x = f.read()
         return json.loads(x)
-
-def constructPlayer(id):
-    id = str(id)
-    global data
-    data = jsonLoad()
-    if id not in data:
-        data[id] = {"Money": 0, "Inventory": [], "Energy": {"Val": 10, "Recover": int(time.time())}}
-    listContent = []
-    for i in data[id]["Inventory"]:
-        x = Item(i["Id"], i["Name"], i["Amount"], i["Exclusive"])
-        listContent.append(x)
-    inventoryObject = Inventory(listContent, data[id]["Inventory"])
-    playerObject = Player(inventoryObject, data[id]["Money"], data[id]["Energy"], id=id)
-    return playerObject
-
-def constructShop(shopId):
-    global data
-    data = jsonLoad()
-    listContent = []
-    for i in data["Shops"][shopId]["Inventory"]:
-        x = Item(i["Id"], i["Name"], i["Amount"], i["Exclusive"])
-        listContent.append(x)
-    inventoryObject = Inventory(listContent, data[id]["Inventory"])
-    shopObject = Shop(data["Shops"][shopId]["Owner"], inventoryObject, data["Shops"][shopId], shopId)
-    return shopObject
 
 
 class Economy(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.fish_activated = {}
+        self.fishermen = {}
 
     @commands.command()
     async def idtoname(self, ctx, id: str):
-        await ctx.send(find_item_from_id(id).name)
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
+        embed = await embed_template("Money Cog", ItemHandler.get_item(id).name)
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def bal(self, ctx, *user: discord.Member):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         if not user:
             user = ctx.message.author
         else:
             user = user[0]
         id = str(user.id)
-        player = constructPlayer(user.id)
+        data = jsonLoad()
+        player = PlayerHandler.constructPlayer(user.id)
         embed = discord.Embed(title="{0}'s balance".format(user.display_name))
         embed.add_field(name="Money:", value="{0}{1}".format(player.money, data["Currency"]), inline=True)
         await ctx.send(embed=embed)
@@ -236,26 +84,30 @@ class Economy(commands.Cog):
 
     @commands.command()
     async def pay(self, ctx, user: discord.Member, amount):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         amount = amount.replace(",", "")
         amount = int(amount)
         if not amount < 0 or ctx.message.author.id == 331431342438875137:
             id = str(user.id)
             idc = str(ctx.message.author.id)
-            player = constructPlayer(id)
-            playerc = constructPlayer(idc)
+            player = PlayerHandler.constructPlayer(id)
+            playerc = PlayerHandler.constructPlayer(idc)
             if amount > playerc.money:
                 await ctx.send("You ain't got the money")
             else:
                 playerc.money -= amount
                 player.money += amount
-                await ctx.send("Succesfully paid user")
+                embed = await embed_template("Money Cog", "Successfully paid user")
+                await ctx.send(embed=embed)
             player.save()
             playerc.save()
         else:
-            await ctx.send("Stealing is wrong")
+            embed = await embed_template("Money Cog", "Stealing is wrong")
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def top(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         global data
         data = jsonLoad()
         exp = {}
@@ -286,19 +138,24 @@ class Economy(commands.Cog):
                 string = string + "{" + str(x + 1) + "}     #" + usa.display_name + "\n        Money : [" + str(val) + "] " + data[
                     "Currency"] + "\n"
         string = string + '```'
-        await ctx.send(string)
+        embed = await embed_template("Money Cog", string)
+        await ctx.send(embed=embed)
 
     @commands.command()
-    async def addexcl(self, ctx, id: str, *name):
+    async def addexcl(self, ctx, *name):
         if ctx.message.author.id == 331431342438875137:
-            player = constructPlayer(ctx.author.id)
+            player = PlayerHandler.constructPlayer(ctx.author.id)
             name = " ".join(name)
-            player.inventory.content.append({"Amount": 1, "Exclusive": True, "Name": name, "Id": id})
+            player.inventory + ItemHandler.get_item(amount=1, exclusive=True, name=name, id="273")
             player.save()
         else:
-            await ctx.send("Sorry lol you can't do that")
+            embed = await embed_template("Money Cog", "Sorry you cant do that lol")
+            await ctx.send(embed=embed)
+
+
     @commands.command()
     async def craft(self, ctx, itemName, amountx=1):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         def craft(result, ctx, items, amounts, resultAmount, resultId, player):
             ranX = False
             if len(items) > 1:
@@ -312,14 +169,14 @@ class Economy(commands.Cog):
                 amount1 = amounts[0]
             if ranX is True:
                 if player.inventory.has(item1) is not False and player.inventory.has(item2) is not False:
-                    item1 = player.inventory.has(item1)
-                    item2 = player.inventory.has(item2)
+                    item1 = player.inventory.get(item1)
+                    item2 = player.inventory.get(item2)
                     if item1.amount > (amount1 - 1) and item2.amount > (amount2 - 1):
                         item1.amount -= amount1
                         item2.amount -= amount2
                         if player.inventory.has(resultId) is False:
-                            resultItem = Item(id=resultId, name=result, amount=resultAmount, exclusive=False)
-                            player.inventory.content.append(resultItem)
+                            resultItem = ItemHandler.get_item(id=resultId, name=result, amount=resultAmount, exclusive=False)
+                            player.inventory + resultItem
                             player.save()
                         else:
                             resultInInv = player.inventory.has(resultId)
@@ -337,8 +194,8 @@ class Economy(commands.Cog):
                     if item1.amount >= amount1:
                         item1.amount -= amount1
                         if player.inventory.has(resultId) is False:
-                            resultItem = Item(id=resultId, name=result, amount=resultAmount, exclusive=False)
-                            player.inventory.content.append(resultItem)
+                            resultItem = ItemHandler.get_item(id=resultId, name=result, amount=resultAmount, exclusive=False)
+                            player.inventory + (resultItem)
                             player.save()
                         else:
                             resultInInv = player.inventory.has(resultId)
@@ -352,10 +209,10 @@ class Economy(commands.Cog):
             return ("error")
 
         user = ctx.message.author
-        player = constructPlayer(user.id)
+        player = PlayerHandler.constructPlayer(user.id)
         cramed = cram()
         crafts = cramed["crafts"]
-        itemId = find_id_from_item_name(itemName)
+        itemId = ItemHandler.id_from_name(itemName)
         for item in crafts.keys():
             zx = crafts[item]
             if "Id" in zx:
@@ -364,39 +221,46 @@ class Economy(commands.Cog):
                     for i in zx["list2"]:
                         list2.append(i*amountx)
                     z = craft(zx["Result"], ctx, zx["list1"], list2, (zx["ResultAmount"]*amountx), itemId,  player)
-                    await ctx.send(z)
+                    embed = await embed_template("Money Cog", z)
+                    print('hey')
+                    await ctx.send(embed=embed)
                     return
-        await ctx.send("Craft not found")
+        embed = await embed_template("Money Cog", "Craft not found")
+        await ctx.send(embed=embed)
 
 
     @commands.command()
     async def craftable(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         global data
         data= jsonLoad()
         cramed = cram()
         string = ""
         for i in cramed["crafts"].keys():
             item = cramed["crafts"][i]
-            text= "**{0}**, Requires Item: **{2}** __x{1}__".format(item["Result"], item["list2"][0], find_item_from_id(item['list1'][0]).name)
+            text= "**{0}**, Requires Item: **{2}** __x{1}__".format(item["Result"], item["list2"][0], ItemHandler.get_item(item['list1'][0]).name)
             if len(item['list1'])>1:
-                text+= " and Item Id **{1}** __x{0}__".format(item["list2"][1], find_item_from_id(item['list1'][1]).name)
+                text+= " and Item: **{1}** __x{0}__".format(item["list2"][1], ItemHandler.get_item(item['list1'][1]).name)
             text+="\n"
             string+=text
-        await ctx.send(string)
+        embed = await embed_template("Money Cog", string)
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def energy(self, ctx):
         user = ctx.message.author
-        player = constructPlayer(user.id)
+        player = PlayerHandler.constructPlayer(user.id)
         executeSomething()
-        await ctx.send("{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
+        embed = await embed_template("Money Cog", "{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
+        await ctx.send(embed=embed)
         player.save()
 
     @commands.command()
     async def eat(self, ctx, itemName: str):
-        player = constructPlayer(ctx.author.id)
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
+        player = PlayerHandler.constructPlayer(ctx.author.id)
         cramed = cram()
-        itemId = find_id_from_item_name(itemName)
+        itemId = ItemHandler.id_from_name(itemName)
         if str(itemId) in cramed["Eatables"]:
             if player.inventory.has(itemId) is not False:
                 if player.inventory.get(itemId).amount>0:
@@ -405,39 +269,45 @@ class Economy(commands.Cog):
                     player.energy["Val"] += cramed["Eatables"][itemId]
                     if player.energy["Val"] > 10:
                         player.energy["Val"] = 10
-                    await ctx.send("Replenished {0} energy".format(cramed["Eatables"][itemId]))
+                    embed = await embed_template("Money Cog", "Replenished {0} energy".format(cramed["Eatables"][itemId]))
+                    await ctx.send(embed=embed)
                     player.save()
                 else:
-                    await ctx.send("Y'aint have that")
+                    embed = await embed_template("Money Cog", "Y'aint have that")
+                    await ctx.send(embed=embed)
             else:
-                await ctx.send("Y'aint have that")
+                embed = await embed_template("Money Cog", "Y'aint have that")
+                await ctx.send(embed=embed)
         else:
-            await ctx.send("Ya can't eat that")
+            embed = await embed_template("Money Cog", "Ya can't that")
+            await ctx.send(embed=embed)
 
     @commands.command(aliases=['inv'])
     async def inventory(self, ctx, *user: discord.Member):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         if not user:
             user = ctx.message.author
         else:
             user = user[0]
-        player = constructPlayer(user.id)
+        player = PlayerHandler.constructPlayer(user.id)
         temp = []
         embed = discord.Embed(title="{0}'s inventory".format(user.display_name))
         for item in player.inventory.content:
             if item.exclusive:
                 embed.add_field(name=item.name, value="Exclusive")
-                temp.append((item.name) + ": Exclusive\n")
+                temp.append((item.name) + ": Exclusive")
             else:
                 embed.add_field(name=item.name, value=item.amount)
-                temp.append(str(item.name) + ": **x{0}**\n".format(item.amount))
+                temp.append(str(item.name) + ": **x{0}**".format(item.amount))
         player.save()
         page = Pages(ctx, entries=temp, custom_title="{0}'s inventory:\n".format(user.display_name))
         await page.paginate()
 
     @commands.command()
     async def exploit(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         cramed = cram()
-        player = constructPlayer(ctx.author.id)
+        player = PlayerHandler.constructPlayer(ctx.author.id)
         if player.energy["Val"]>0:
             player.energy["Val"]-=1
             items = [["Frog", 3], ["Oil", 1], ["Diamond Ore", 4], ["Gold Ore", 5], ["Iron Ore", 6], ["Silver Ore", 7], ["Bronze Ore", 2], ["Nothing", 0],
@@ -447,7 +317,6 @@ class Economy(commands.Cog):
             moneyMulti = 1
             result = random.choices(items, weighs)
             result = result[0]
-            print(result)
             for item in cramed["itemMulti"].keys():
                 if player.inventory.has(item) is not False:
                     item2 = player.inventory.get(item)
@@ -465,15 +334,77 @@ class Economy(commands.Cog):
                     toGiveItem = player.inventory.get(str(result[1]))
                     toGiveItem.amount+= itemMulti
                 else:
-                    toGiveItem = Item(result[1], result[0], itemMulti, False)
-                    player.inventory.add(toGiveItem)
+                    toGiveItem = ItemHandler.get_item(result[1], result[0], itemMulti, False)
+                    player.inventory + toGiveItem
             if result[1] == 0:
-                await ctx.send("You gained {0}{1}".format(str(xValue*moneyMulti), "ยง"))
+                embed = await embed_template("Money Cog", "You gained {0}{1}".format(str(xValue*moneyMulti), "ยง"))
+                await ctx.send(embed=embed)
             else:
-                await ctx.send("You gained {0}{1} and found {2} {3}".format(str(xValue * moneyMulti), "ยง", itemMulti, toGiveItem.name))
+                embed = await embed_template("Money Cog", "You gained {0}{1} and found {2} {3}".format(str(xValue * moneyMulti), "ยง", itemMulti, toGiveItem.name))
+                await ctx.send(embed=embed)
         else:
-            await ctx.send("No energy sowwy")
+            embed = await embed_template("Money Cog", "No energy sowwy")
+            await ctx.send(embed=embed)
         player.save()
+
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def fish(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
+        self.fish_activated[ctx.author.id] = 0
+        embed = discord.Embed(title="Fishing", description="Click the reaction at the right time to catch a fish")
+        embed.add_field(name="Indicator", value="🔵")
+        fish_message = await ctx.send(embed=embed)
+        self.fishermen[fish_message.id] = ctx.author.id
+        await fish_message.add_reaction("🎣")
+        delay = randint(5, 25)
+        await asyncio.sleep(delay)
+        self.fish_activated[ctx.author.id] = 1
+        new_embed = discord.Embed(title="Fishing", description="Click the reaction at the right time to catch a fish")
+        new_embed.add_field(name="Indicator", value="🐟")
+        await fish_message.edit(embed=new_embed)
+        await asyncio.sleep(2)
+        self.fish_activated[ctx.author.id] = 2
+        await asyncio.sleep(5)
+        await fish_message.clear_reactions()
+
+
+    async def check_for_fishing(self, playload):
+        id = playload.user_id
+        if self.fish_activated[id] == 0:
+            message = await self.get_message_from_playload(playload)
+            await message.clear_reactions()
+            channel = self.bot.get_channel(playload.channel_id)
+            await channel.send("Too quick")
+        elif self.fish_activated[id] == 1:
+            message = await self.get_message_from_playload(playload)
+            await message.clear_reactions()
+            # / Give the fish
+            items = ["Carp"]
+            weighs = [1]
+            player = PlayerHandler.constructPlayer(playload.user_id)
+            carp = ItemHandler.get_item(id="10")
+            player.inventory + carp
+            player.save()
+            await message.channel.send("You got a Carp")
+        elif self.fish_activated[id] == 2:
+            message = await self.get_message_from_playload(playload)
+            channel = self.bot.get_channel(playload.channel_id)
+            await message.clear_reactions
+            channel.send("Too slow")
+
+
+    async def get_message_from_playload(self, playload):
+        channel = self.bot.get_channel(playload.channel_id)
+        return await channel.fetch_message(playload.message_id)
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, playload):
+        emoji = str(playload.emoji)
+        if emoji == "🎣":
+            if playload.message_id in self.fishermen:
+                if self.fishermen[playload.message_id] == playload.user_id:
+                    await self.check_for_fishing(playload=playload)
 
     @commands.Cog.listener()
     async def on_message(self, message):

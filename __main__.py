@@ -43,16 +43,22 @@ async def on_message(message):
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.BadArgument):
+        embed = discord.Embed(color=0xdd1313)
+        embed.set_image(url="https://thumbs.gfycat.com/DismalWarmArmadillo-max-1mb.gif")
+        await ctx.send(embed=embed)
         await ctx.send(":negative_squared_cross_mark: Bad Argument.")
         return
-    if isinstance(error, CommandNotFound):
-        await ctx.send("Hey chill I can't do that.")
-        return
     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
+        embed = discord.Embed(color=0xdd1313)
+        embed.set_image(url="https://thumbs.gfycat.com/DismalWarmArmadillo-max-1mb.gif")
+        await ctx.send(embed=embed)
         await ctx.send("Missing arguments")
         return
     if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
-        await ctx.send("There was an error executing that command")
+        embed = discord.Embed(color=0xdd1313)
+        embed.set_image(url="https://media1.tenor.com/images/f1187d7f7d745182879263e0b125e2eb/tenor.gif?itemid=7906629")
+        await ctx.send(embed=embed)
+        await ctx.send("Something unexpected happened")
         raise error
         return
     if isinstance(error, discord.ext.commands.errors.MissingPermissions):

@@ -1,6 +1,7 @@
 import discord, os
 from discord.ext import commands
 from discord.ext.commands import has_permissions
+from Libraries.Library import get_guild_language, Pages, command_activated
 import time
 import json
 import random
@@ -9,6 +10,7 @@ from datetime import datetime
 from time import sleep
 import operator
 import mysql.connector
+import inspect
 
 
 cooldown = {0: 0}
@@ -29,7 +31,7 @@ async def guild_in_database(guild_id: int):
     mycursor = mydb.cursor(buffered=True)
     mycursor.execute("SELECT * FROM levels")
     for x in mycursor:
-        # // print(str(x[0]) + "\n" + str(guild_id) + "\n\n")
+        # print(str(x[0]) + "\n" + str(guild_id) + "\n\n")
         if x[0] == guild_id:
             return True
     return False
@@ -66,10 +68,10 @@ async def load_guild_data(guild_id: int):
         myresult = mycursor.fetchone()
         return json.loads(myresult[1])
     else:
-        print('hey, that guild is new')
         dict = json.dumps({'0': '0'})
         mycursor = mydb.cursor(buffered=True)
         mycursor.execute("INSERT INTO levels (id, data) VALUES (%s, %s)", (guild_id, dict))
+        mydb.commit()
         return json.loads(dict)
 
 # // Saves the data into the MySQL database \\ #
@@ -106,7 +108,7 @@ class level(commands.Cog):
                             if before_exp<exp_required and after_exp>exp_required:
                                 role = message.guild.get_role(int(guild_settings['exp_roles'][str(exp_required)]))
                                 await member.add_roles(role)
-                                await message.channel.send("You've been awarded the {0} role".format(role.mention))
+                                await message.channel.send("You've been awarded the {0} role".format(role.name))
                     else:
                         guild_data[str(member.id)] = {"exp": 0}
                     await save_guild_data(message.guild.id, guild_data)
@@ -115,6 +117,7 @@ class level(commands.Cog):
 
     @commands.command()
     async def exp(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         if ctx.guild:
             guild_data = await load_guild_data(ctx.guild.id)
             member = ctx.author
@@ -130,6 +133,7 @@ class level(commands.Cog):
 
     @commands.command(aliases=['ranks'])
     async def leveltop(self, ctx):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         guild_data = await load_guild_data(ctx.guild.id)
         exp = {}
         for i in guild_data:
@@ -158,6 +162,7 @@ class level(commands.Cog):
     @commands.command()
     @has_permissions(administrator=True)
     async def set_exp_gain(self, ctx, value: int):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         guild_settings = await get_guild_settings(ctx.guild.id)
         with open('data/settings.json', 'r') as f:
             x = f.read()
@@ -172,6 +177,7 @@ class level(commands.Cog):
     @commands.command()
     @has_permissions(administrator=True)
     async def create_exp_role(self, ctx, exp: int, role: discord.Role):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         exp = str(exp)
         guild_settings = await get_guild_settings(ctx.guild.id)
         with open('data/settings.json', 'r') as f:
@@ -186,6 +192,7 @@ class level(commands.Cog):
     @commands.command()
     @has_permissions(administrator=True)
     async def delete_exp_role(self, ctx, exp: int):
+        if not await command_activated(ctx, str(inspect.stack()[0][3])): return
         exp = str(exp)
         guild_settings = await get_guild_settings(ctx.guild.id)
         with open('data/settings.json', 'r') as f:

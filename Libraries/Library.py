@@ -3,6 +3,11 @@ import discord
 import asyncio
 import mysql.connector
 
+async def embed_template(name, value):
+    embed = discord.Embed(color=0xdd1313)
+    embed.add_field(name=name, value=value)
+    return embed
+
 def get_guild_language(guild_id: str):
     with open('data/settings.json', 'r') as file:
         content = file.read()
@@ -12,6 +17,33 @@ def get_guild_language(guild_id: str):
         else:
             settings[str(guild_id)] = {'Language': 'en'}
             return settings[str(guild_id)]['Language']
+
+async def command_activated(ctx, command_name: str, verbose=True):
+    guild_id = str(ctx.guild.id)
+    with open('data/settings.json', 'r') as file:
+        return_arg=True
+        content = file.read()
+        settings = json.loads(content)
+        if guild_id in settings:
+            if "command_permissions" in settings[guild_id]:
+                if command_name in settings[guild_id]["command_permissions"]:
+                    perm = settings[guild_id]["command_permissions"][command_name]
+                    if perm == True:
+                        return_arg = True
+                    elif perm == False:
+                        if verbose:
+                            await ctx.send("This command has been deactivated by a server administrator")
+                        return False
+            else:
+                settings[guild_id]['command_permissions'] = {}
+                return_arg=True
+        else:
+            settings[str(guild_id)] = {'Language': 'en', 'command_permissions': {}}
+            return_arg=True
+    d = json.dumps(settings, sort_keys=True, indent=4, separators=(',', ': '))
+    with open("data/settings.json", "w") as file:
+        file.write(d)
+    return return_arg
 
 class sqlClient:
 
