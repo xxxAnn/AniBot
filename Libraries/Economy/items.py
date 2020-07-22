@@ -7,7 +7,27 @@ class ItemHandler:
             self.exclusive = exclusive
 
     class Food(Item):
+        def _type(self):
+            return "Food"
+
+    class Tool(Item):
         pass
+
+    class Weapon(Tool):
+        def _type(self):
+            return "Weapon"
+
+    class Resource(Item):
+        def _type(self):
+            return "Resource"
+
+    class FisherRod(Tool):
+        def _type(self):
+            return "FisherRod"
+
+    class Animal(Item):
+        def _type(self):
+            return "Animal"
 
     class Inventory:
         def __init__(self, content, content_literal):
@@ -82,11 +102,20 @@ class ItemHandler:
         "105": "Silver Sword"
         }
         food = ["9", "10", "17"]
+        resource = ["1", "2", "4", "5", "6", "7", "8", "101"]
+        weapon = ["100", "103", "104", "105"]
+        animal = ["3"]
         if name == None:
             if id in dict_name:
                 name = dict_name[id]
                 if id in food:
                     return ItemHandler.Food(id, name, amount, exclusive)
+                elif id in resource:
+                    return ItemHandler.Resource(id, name, amount, exclusive)
+                elif id in weapon:
+                    return ItemHandler.Weapon(id, name, amount, exclusive)
+                elif id in animal:
+                    return ItemHandler.Animal(id, name, amount, exclusive)
                 else:
                     return ItemHandler.Item(id, name, amount, exclusive)
             else:
@@ -94,5 +123,11 @@ class ItemHandler:
         else:
             if id in food:
                 return ItemHandler.Food(id, name, amount, exclusive)
+            elif id in resource:
+                return ItemHandler.Resource(id, name, amount, exclusive)
+            elif id in weapon:
+                return ItemHandler.Weapon(id, name, amount, exclusive)
+            elif id in animal:
+                return ItemHandler.Animal(id, name, amount, exclusive)
             else:
                 return ItemHandler.Item(id, name, amount, exclusive)

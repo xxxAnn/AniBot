@@ -64,7 +64,8 @@ class Economy(commands.Cog):
     @commands.command()
     async def idtoname(self, ctx, id: str):
         if not await command_activated(ctx, str(inspect.stack()[0][3])): return
-        await ctx.send(ItemHandler.get_item(id).name)
+        embed = await embed_template("Money Cog", ItemHandler.get_item(id).name)
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def bal(self, ctx, *user: discord.Member):
@@ -96,11 +97,13 @@ class Economy(commands.Cog):
             else:
                 playerc.money -= amount
                 player.money += amount
-                await ctx.send("Succesfully paid user")
+                embed = await embed_template("Money Cog", "Successfully paid user")
+                await ctx.send(embed=embed)
             player.save()
             playerc.save()
         else:
-            await ctx.send("Stealing is wrong")
+            embed = await embed_template("Money Cog", "Stealing is wrong")
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def top(self, ctx):
@@ -135,17 +138,20 @@ class Economy(commands.Cog):
                 string = string + "{" + str(x + 1) + "}     #" + usa.display_name + "\n        Money : [" + str(val) + "] " + data[
                     "Currency"] + "\n"
         string = string + '```'
-        await embed_template("Money Cog", string)
+        embed = await embed_template("Money Cog", string)
+        await ctx.send(embed=embed)
 
     @commands.command()
-    async def addexcl(self, ctx, id: str, *name):
+    async def addexcl(self, ctx, *name):
         if ctx.message.author.id == 331431342438875137:
             player = PlayerHandler.constructPlayer(ctx.author.id)
             name = " ".join(name)
-            player.inventory + ItemHandler.get_item(Amount=1, Exclusive=True, Name=name, Id=id)
+            player.inventory + ItemHandler.get_item(amount=1, exclusive=True, name=name, id="273")
             player.save()
         else:
-            await ctx.send("Sorry lol you can't do that")
+            embed = await embed_template("Money Cog", "Sorry you cant do that lol")
+            await ctx.send(embed=embed)
+
 
     @commands.command()
     async def craft(self, ctx, itemName, amountx=1):
@@ -215,9 +221,12 @@ class Economy(commands.Cog):
                     for i in zx["list2"]:
                         list2.append(i*amountx)
                     z = craft(zx["Result"], ctx, zx["list1"], list2, (zx["ResultAmount"]*amountx), itemId,  player)
-                    await ctx.send(z)
+                    embed = await embed_template("Money Cog", z)
+                    print('hey')
+                    await ctx.send(embed=embed)
                     return
-        await ctx.send("Craft not found")
+        embed = await embed_template("Money Cog", "Craft not found")
+        await ctx.send(embed=embed)
 
 
     @commands.command()
@@ -231,17 +240,19 @@ class Economy(commands.Cog):
             item = cramed["crafts"][i]
             text= "**{0}**, Requires Item: **{2}** __x{1}__".format(item["Result"], item["list2"][0], ItemHandler.get_item(item['list1'][0]).name)
             if len(item['list1'])>1:
-                text+= " and Item Id **{1}** __x{0}__".format(item["list2"][1], ItemHandler.get_item(item['list1'][1]).name)
+                text+= " and Item: **{1}** __x{0}__".format(item["list2"][1], ItemHandler.get_item(item['list1'][1]).name)
             text+="\n"
             string+=text
-        await ctx.send(string)
+        embed = await embed_template("Money Cog", string)
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def energy(self, ctx):
         user = ctx.message.author
         player = PlayerHandler.constructPlayer(user.id)
         executeSomething()
-        await ctx.send("{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
+        embed = await embed_template("Money Cog", "{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
+        await ctx.send(embed=embed)
         player.save()
 
     @commands.command()
@@ -258,14 +269,18 @@ class Economy(commands.Cog):
                     player.energy["Val"] += cramed["Eatables"][itemId]
                     if player.energy["Val"] > 10:
                         player.energy["Val"] = 10
-                    await ctx.send("Replenished {0} energy".format(cramed["Eatables"][itemId]))
+                    embed = await embed_template("Money Cog", "Replenished {0} energy".format(cramed["Eatables"][itemId]))
+                    await ctx.send(embed=embed)
                     player.save()
                 else:
-                    await ctx.send("Y'aint have that")
+                    embed = await embed_template("Money Cog", "Y'aint have that")
+                    await ctx.send(embed=embed)
             else:
-                await ctx.send("Y'aint have that")
+                embed = await embed_template("Money Cog", "Y'aint have that")
+                await ctx.send(embed=embed)
         else:
-            await ctx.send("Ya can't eat that")
+            embed = await embed_template("Money Cog", "Ya can't that")
+            await ctx.send(embed=embed)
 
     @commands.command(aliases=['inv'])
     async def inventory(self, ctx, *user: discord.Member):
@@ -280,10 +295,10 @@ class Economy(commands.Cog):
         for item in player.inventory.content:
             if item.exclusive:
                 embed.add_field(name=item.name, value="Exclusive")
-                temp.append((item.name) + ": Exclusive\n")
+                temp.append((item.name) + ": Exclusive")
             else:
                 embed.add_field(name=item.name, value=item.amount)
-                temp.append(str(item.name) + ": **x{0}**\n".format(item.amount))
+                temp.append(str(item.name) + ": **x{0}**".format(item.amount))
         player.save()
         page = Pages(ctx, entries=temp, custom_title="{0}'s inventory:\n".format(user.display_name))
         await page.paginate()
@@ -322,11 +337,14 @@ class Economy(commands.Cog):
                     toGiveItem = ItemHandler.get_item(result[1], result[0], itemMulti, False)
                     player.inventory + toGiveItem
             if result[1] == 0:
-                await ctx.send("You gained {0}{1}".format(str(xValue*moneyMulti), "ยง"))
+                embed = await embed_template("Money Cog", "You gained {0}{1}".format(str(xValue*moneyMulti), "ยง"))
+                await ctx.send(embed=embed)
             else:
-                await ctx.send("You gained {0}{1} and found {2} {3}".format(str(xValue * moneyMulti), "ยง", itemMulti, toGiveItem.name))
+                embed = await embed_template("Money Cog", "You gained {0}{1} and found {2} {3}".format(str(xValue * moneyMulti), "ยง", itemMulti, toGiveItem.name))
+                await ctx.send(embed=embed)
         else:
-            await ctx.send("No energy sowwy")
+            embed = await embed_template("Money Cog", "No energy sowwy")
+            await ctx.send(embed=embed)
         player.save()
 
     @commands.command()
