@@ -2,13 +2,22 @@ import discord
 import json
 from discord.ext import commands
 from discord.ext.commands import has_permissions
+from Libraries.Library import get_guild_language, command_activated, embed_template
 from datetime import datetime
-
+import inspect
 
 class Moderation(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    @has_permissions(manage_messages=True)
+    async def purge(self, ctx, amount: int=10):
+        await ctx.message.delete()
+        await ctx.channel.purge(limit=amount)
+        embed = await embed_template("Purge", "Succesfully purged {} messages".format(amount))
+        await ctx.send(embed=embed)
 
     @commands.command()
     @has_permissions(manage_roles=True)
