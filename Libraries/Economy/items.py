@@ -1,5 +1,7 @@
+from Libraries.Economy.globals import Waterfall, EconomyHandler
+
 class ItemHandler:
-    class Item:
+    class Item(Waterfall):
         def __init__(self, id, name, amount, exclusive):
             self.id = str(id)
             self.name = name
