@@ -1,7 +1,8 @@
 from Libraries.Economy.items import ItemHandler
 from Libraries.Library import sqlClient
-import time
+from Libraries.Economy.globals import Waterfall, EconomyHandler
 import json
+import time
 
 class PlayerHandler:
     # // loads data from the database
@@ -42,7 +43,7 @@ class PlayerHandler:
         playerObject.save()
         return playerObject
 
-    class Player:
+    class Player(Waterfall):
 
         def __init__(self, inventory, money, energy, id):
             self.inventory = inventory
@@ -59,3 +60,12 @@ class PlayerHandler:
             content_literal = PlayerHandler.toContentLiteral(self.inventory.content)
             data[self.id]["Inventory"] = content_literal
             PlayerHandler.jsonUpdate(data)
+
+        def __eq__(self, other):
+            if isinstance(other, PlayerHandler.Player):
+                if self.id == other.id:
+                    return True
+                else:
+                    return False
+            else:
+                raise TypeError

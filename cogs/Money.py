@@ -1,18 +1,19 @@
 import discord, os
 from discord.ext import commands
-import time
 import json
 import random
 from random import randint
 from datetime import datetime
-from time import sleep
 import operator
 import asyncio
 import mysql.connector
 from Libraries.Library import Pages, sqlClient, command_activated, embed_template
 from Libraries.Economy.items import ItemHandler
 from Libraries.Economy.player import PlayerHandler
+from Libraries.Economy.shops import ShopHandler
+from Libraries.Economy.globals import Waterfall, EconomyHandler
 import inspect
+import time
 
 # // Loads data from the database \\ #
 def jsonLoad():
@@ -347,6 +348,113 @@ class Economy(commands.Cog):
             await ctx.send(embed=embed)
         player.save()
 
+
+    @commands.command()
+    async def create_shop(self, ctx, *Name):
+        Name = " ".join(Name)
+        player = PlayerHandler.constructPlayer(str(ctx.author.id))
+        if player.money >= 5000:
+            player.money-=5000
+            response, id = ShopHandler.createShop(name=Name, ownerId=str(ctx.author.id))
+            if isinstance(response, EconomyHandler.Success):
+                embed = await embed_template("Money Cog", str(response)+"\n Paid 5,000 and bought a level one shop")
+                await ctx.send(embed=embed)
+                player.save()
+            else:
+                embed = await embed_template("Money Cog", str(response))
+                await ctx.send(embed=embed)
+        else:
+            embed = await embed_template("Money Cog", "You don't have the money")
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    async def view_shop(self, ctx, *Name):
+        Name = " ".join(Name)
+        shop = ShopHandler.findShopFromName(Name)
+        if not isinstance(shop, str):
+            embed = discord.Embed(title="{}".format(shop), description="Shows the shop's inventory", color=0xdd1313)
+            if len(shop.inv.content) == 0:
+                embed.add_field(name="There are no items in this shop", value="Come back later")
+            else:
+                for item in shop.inv.content:
+                    embed.add_field(name="{0} x{1}".format(item.name, item.amount), value="Buy for {0}$".format(item.price))
+            await ctx.send(embed=embed)
+        else:
+            raise discord.ext.commands.errors.BadArgument
+
+    @commands.command()
+    async def sell(self, ctx, item, price: int, amount: int, *shopName):
+        shopName = " ".join(shopName)
+        if ItemHandler.id_from_name(item) == "Not Found" or ShopHandler.findShopFromName(shopName) == "Not Found" or isinstance(price, int) == False or isinstance(amount, int) == False: raise discord.ext.commands.errors.BadArgument
+        shop = ShopHandler.findShopFromName(shopName)
+        if str(shop.owner) == str(ctx.author.id):
+            itemId = ItemHandler.id_from_name(item)
+            item = ItemHandler.get_item(str(itemId))
+            player = PlayerHandler.constructPlayer(str(ctx.author.id))
+            if player.inventory.has(str(item.id)):
+                player_inv_item = player.inventory.has(str(item.id))
+                if player_inv_item.amount >= amount:
+                    response = shop.add_item(ItemHandler.Item(id=player_inv_item.id, name=player_inv_item.name, amount=player_inv_item.amount, exclusive=player_inv_item.exclusive), int(amount), int(price))
+                    if isinstance(response, EconomyHandler.Success):
+                        player_inv_item.amount-=int(amount)
+                        shop.save()
+                        player.save()
+                        embed = await embed_template("Money Cog", "Successfully put item to sold")
+                        await ctx.send(embed=embed)
+                    else:
+                        embed = await embed_template("Money Cog", str(response))
+                        await ctx.send(embed=embed)
+                else:
+                    embed = await embed_template("Money Cog", "You don't have enough of that item")
+                    await ctx.send(embed=embed)
+            else:
+                embed = await embed_template("Money Cog", "You don't have that item")
+                await ctx.send(embed=embed)
+        else:
+            embed = await embed_template("Money Cog", "This isn't your shop")
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    async def buy(self, ctx, item, amount:int, *shopName):
+        shopName = " ".join(shopName)
+        if ItemHandler.id_from_name(item) == "Not Found" or ShopHandler.findShopFromName(shopName) == "Not Found" or isinstance(amount, int) == False: raise discord.ext.commands.errors.BadArgument
+        shop = ShopHandler.findShopFromName(shopName)
+        itemId = ItemHandler.id_from_name(item)
+        player = PlayerHandler.constructPlayer(ctx.author.id)
+        if shop.inv.has(itemId):
+            shopItem = shop.inv.get(itemId)
+            if player.money >= shopItem.price:
+                # / Transferring the money
+                player.money-=shopItem.price
+                shopOwner = PlayerHandler.constructPlayer(shop.owner)
+                shopOwner.money+=shopItem.price
+                # / Transfering the item
+                shopItem.amount-=amount
+                newItem = ItemHandler.get_item(id=shopItem.id,amount=amount)
+                player.inventory + newItem
+                # / Saving
+                shopOwner.save()
+                player.save()
+                shop.save()
+                embed = await embed_template("Money Cog", "Successfully bought item")
+                await ctx.send(embed=embed)
+            else:
+                embed = await embed_template("Money Cog", "You don't have the money")
+                await ctx.send(embed=embed)
+        else:
+            embed = await embed_template("Money Cog", "This item is not for sold")
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    async def set_money(self, ctx, user: discord.Member=None, amount:int=50000):
+        if ctx.author.id == 331431342438875137:
+            uza = PlayerHandler.constructPlayer(user.id)
+            uza.money=amount
+            uza.save()
+        else:
+            embed = await embed_template("Money Cog", "You can't do that silly")
+            await ctx.send(embed=embed)
+
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def fish(self, ctx):
@@ -366,8 +474,7 @@ class Economy(commands.Cog):
         await asyncio.sleep(2)
         self.fish_activated[ctx.author.id] = 2
         await asyncio.sleep(5)
-        await fish_message.clear_reactions()
-
+        fish_message.clear_reactions()
 
     async def check_for_fishing(self, playload):
         id = playload.user_id

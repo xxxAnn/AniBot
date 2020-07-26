@@ -1,5 +1,7 @@
+from Libraries.Economy.globals import Waterfall, EconomyHandler
+
 class ItemHandler:
-    class Item:
+    class Item(Waterfall):
         def __init__(self, id, name, amount, exclusive):
             self.id = str(id)
             self.name = name
@@ -21,9 +23,9 @@ class ItemHandler:
         def _type(self):
             return "Resource"
 
-    class FisherRod(Tool):
+    class FishingRod(Tool):
         def _type(self):
-            return "FisherRod"
+            return "FishingRod"
 
     class Animal(Item):
         def _type(self):
@@ -105,6 +107,7 @@ class ItemHandler:
         resource = ["1", "2", "4", "5", "6", "7", "8", "101"]
         weapon = ["100", "103", "104", "105"]
         animal = ["3"]
+        fishing_rod = []
         if name == None:
             if id in dict_name:
                 name = dict_name[id]
@@ -116,6 +119,8 @@ class ItemHandler:
                     return ItemHandler.Weapon(id, name, amount, exclusive)
                 elif id in animal:
                     return ItemHandler.Animal(id, name, amount, exclusive)
+                elif id in fishing_rod:
+                    return ItemHandler.FishingRod(id, name, amount, exclusive)
                 else:
                     return ItemHandler.Item(id, name, amount, exclusive)
             else:
@@ -129,5 +134,7 @@ class ItemHandler:
                 return ItemHandler.Weapon(id, name, amount, exclusive)
             elif id in animal:
                 return ItemHandler.Animal(id, name, amount, exclusive)
+            elif id in fishing_rod:
+                return ItemHandler.FishingRod(id, name, amount, exclusive)
             else:
                 return ItemHandler.Item(id, name, amount, exclusive)
