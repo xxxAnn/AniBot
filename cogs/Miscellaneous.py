@@ -38,6 +38,29 @@ class Miscellaneous(commands.Cog):
             embed = await embed_template("Set Language", local[1][language])
             await ctx.send(embed=embed)
 
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def set_prefix(self, ctx, prefix: str):
+        guild = ctx.guild
+        with open("data/settings.json", "r") as f:
+            x = f.read()
+            content = json.loads(x)
+            f.close()
+        if str(guild.id) in content:
+            content[str(guild.id)]['prefix'] = prefix
+        else:
+            content[str(guild.id)] = {
+            "Language": "en",
+            "command_permissions": {},
+            "level_cog": {},
+            "prefix": prefix
+            }
+        d = json.dumps(content, sort_keys=True, indent=4, separators=(',', ': '))
+        with open("data/settings.json", "w") as file:
+            file.write(d)
+        await ctx.send("Successfully changed prefix")
+
+
     @commands.command(pass_context=True)
     async def members(self, ctx, rolename: discord.Role):
         if not await command_activated(ctx, str(inspect.stack()[0][3])): return

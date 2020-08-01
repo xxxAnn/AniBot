@@ -16,10 +16,37 @@ from discord import FFmpegPCMAudio
 from os import system
 from datetime import datetime
 from data.secret import token_const
+
+
+def get_prefix(bot, msg):
+    '''
+    default_prefix = '-'
+
+    '''
+    prefixes = []
+    if msg.guild is None:
+        prefixes.append('-')
+    else:
+        guild_id = str(msg.guild.id)
+        with open("data/settings.json", "r") as f:
+            x = f.read()
+            content = json.loads(x)
+            f.close()
+        if guild_id in content:
+            if 'prefix' in content[guild_id]:
+                prefixes.append(content[guild_id]['prefix'])
+            else:
+                prefixes.append('-')
+        else:
+            prefixes.append('-')
+    return prefixes
+    
+
 initial_extensions = ['cogs.Fun', 'cogs.Moderation', 'cogs.Miscellaneous', 'cogs.Money', 'cogs.level']
-BOT_PREFIX = ("%",'-')
+
+
 TOKEN = token_const
-client = Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
+client = Bot(command_prefix=get_prefix, case_insensitive=True)
 client.case_insensitive = True
 
 
