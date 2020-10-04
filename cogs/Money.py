@@ -423,11 +423,11 @@ class Economy(commands.Cog):
         player = PlayerHandler.constructPlayer(ctx.author.id)
         if shop.inv.has(itemId):
             shopItem = shop.inv.get(itemId)
-            if player.money >= shopItem.price:
+            if player.money >= shopItem.price*amount:
                 # / Transferring the money
-                player.money-=shopItem.price
+                player.money-=shopItem.price*amount
                 shopOwner = PlayerHandler.constructPlayer(shop.owner)
-                shopOwner.money+=shopItem.price
+                shopOwner.money+=shopItem.price*amount
                 # / Transfering the item
                 shopItem.amount-=amount
                 newItem = ItemHandler.get_item(id=shopItem.id,amount=amount)
