@@ -17,6 +17,7 @@ class PlayerHandler:
     def toContentLiteral(inventoryContentItem):
         literal_list = []
         for item in inventoryContentItem:
+            if item == None: continue
             x = {"Id": item.id, "Name": item.name, "Amount": item.amount, "Exclusive": item.exclusive}
             literal_list.append(x)
         return literal_list
@@ -36,8 +37,9 @@ class PlayerHandler:
             data[id] = {"Money": 0, "Inventory": [], "Energy": {"Val": 10, "Recover": int(time.time())}}
         listContent = []
         for i in data[id]["Inventory"]:
-            x = ItemHandler.get_item(id=i["Id"], name=i["Name"], amount=i["Amount"], exclusive=i["Exclusive"])
-            listContent.append(x)
+            if i["Amount"] != 0:
+                x = ItemHandler.get_item(id=i["Id"], name=i["Name"], amount=i["Amount"], exclusive=i["Exclusive"])
+                listContent.append(x)
         inventoryObject = ItemHandler.Inventory(listContent, data[id]["Inventory"])
         playerObject = PlayerHandler.Player(inventoryObject, data[id]["Money"], data[id]["Energy"], id=id)
         playerObject.save()
@@ -60,6 +62,28 @@ class PlayerHandler:
             content_literal = PlayerHandler.toContentLiteral(self.inventory.content)
             data[self.id]["Inventory"] = content_literal
             PlayerHandler.jsonUpdate(data)
+
+        def craft(self, item_name, amount):
+            item = ItemHandler.get_item(ItemHandler.id_from_name(item_name))
+            if item.craftable():
+                craft_data = item.get_craft_metadata()
+                # Applying multipliers
+                for i in range(0,2):
+                    craft_data["requireditemsamount"][i]*=amount
+                craft_data["ResultAmount"]*=amount
+                # Checking if craft is legal
+                if not self.inventory.multi_has(craft_data["requireditems"]): return 2
+                for i in range(0,2):
+                    item = self.inventory.get(str(craft_data["requireditems"][i]))
+                    if not item.amount >= craft_data["requireditemsamount"][i]: return 3
+                    item.amount -= craft_data["requireditemsamount"][i]
+                result = ItemHandler.get_item(ItemHandler.id_from_name(item_name))
+                result.amount = craft_data["ResultAmount"]
+                self.inventory + result
+                self.save() 
+                return 20 
+            else:
+                return 1
 
         def __eq__(self, other):
             if isinstance(other, PlayerHandler.Player):

@@ -1,0 +1,194 @@
+{
+    "itemdata": {
+        "1": {
+            "Name": "Oil", 
+            "Type": "Food",
+            "Effects": [], 
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.1,
+            "Edible": false 
+            },
+        "2": {
+            "Name": "Bronze Ore",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.1,
+            "Edible": false
+        },
+        "3": {
+            "Name": "Frog",
+            "Type": "Animal",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.3,
+            "Edible": false
+        },
+        "4": {
+            "Name": "Diamond Ore",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.005,
+            "Edible": false
+        },
+        "5": {
+            "Name": "Gold Ore",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.0075,
+            "Edible": false
+        },
+        "6": {
+            "Name": "Iron Ore",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.01,
+            "Edible": false
+        },
+        "7": {
+            "Name": "Silver Ore",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.05,
+            "Edible": false
+        },
+        "8": {
+            "Name": "Wood",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.2,
+            "Edible": false
+        },
+        "9": {
+            "Name": "Bread",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.1,
+            "Edible": true
+        },
+        "10": {
+            "Name": "Carp",
+            "Type": "Animal",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": 1,
+            "Exploit": false,
+            "Edible": false
+        },
+        "17": {
+            "Name": "Meat",
+            "Type": "Food",
+            "Effects": [],
+            "Recipe": false,
+            "Fishing": false,
+            "Exploit": 0.05,
+            "Edible": false
+        },
+        "100": {
+            "Name": "Bronze Knife",
+            "Type": "Weapon",
+            "Effects": [],
+            "Recipe": {
+                "ResultAmount": 1,
+                "requireditems": [
+                    "2",
+                    "103"
+                ],
+                "requireditemsamount": [
+                    10,
+                    1
+                ]
+            },
+            "Fishing": false,
+            "Exploit": false,
+            "Edible": false
+        },
+        "101": {
+            "Name": "Plastic",
+            "Type": "Resource",
+            "Effects": [],
+            "Recipe": {
+                "ResultAmount": 1,
+                "requireditems": [
+                    "1"
+                ],
+                "requireditemsamount": [
+                    100
+                ]
+            },
+            "Fishing": false,
+            "Exploit": false,
+            "Edible": false
+        },
+        "103": {
+            "Name": "Toy Knife",
+            "Type": "Weapon",
+            "Effects": [],
+            "Recipe": {
+                "ResultAmount": 1,
+                "requireditems": [
+                  "101"
+                ],
+                "requireditemsamount": [
+                  10
+                ]
+          },
+            "Fishing": false,
+            "Exploit": false,
+            "Edible": false
+        },
+        "104": {
+            "Name": "Diamond Sword",
+            "Type": "Weapon",
+            "Effects": [],
+            "Recipe": {
+                "ResultAmount": 1,
+                "requireditems": [
+                  "4",
+                  "100"
+                ],
+                "requireditemsamount":[
+                  5,
+                  1
+              ]
+            },
+            "Fishing": false,
+            "Exploit": false,
+            "Edible": false
+        },
+        "105": {
+            "Name": "Silver Sword",
+            "Type": "Weapon",
+            "Effects": [],
+            "Recipe": {
+                "ResultAmount": 1,
+                "requireditems": [
+                  "7",
+                  "100"
+                ],
+                "requireditemsamount":[
+                  5,
+                  1
+              ]
+            },
+            "Fishing": false,
+            "Exploit": false,
+            "Edible": false
+        }
+    }
+}

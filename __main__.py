@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions, MissingPermissions
 from discord.ext.commands import CommandNotFound
 from discord.voice_client import VoiceClient
+from Libraries.Economy.metareader import Metareader
 import time
 import random
 from PyDictionary import PyDictionary
@@ -46,7 +47,7 @@ initial_extensions = ['cogs.Fun', 'cogs.Moderation', 'cogs.Miscellaneous', 'cogs
 
 
 TOKEN = token_const
-client = Bot(command_prefix=get_prefix, case_insensitive=True)
+client = Bot(command_prefix=get_prefix, case_insensitive=True, intents=discord.Intents(messages=True, guilds=True, members=True, reactions=True))
 client.case_insensitive = True
 
 
@@ -62,6 +63,7 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    
 
 @client.event
 async def on_message(message):
@@ -87,9 +89,10 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed)
         await ctx.send("Something unexpected happened")
         raise error
-        return
     if isinstance(error, discord.ext.commands.errors.MissingPermissions):
         await ctx.send("Missing permissions")
+    if isinstance(error, discord.ext.commands.errors.CommandOnCooldown):
+        await ctx.message.reply("You are on cooldown!", mention_author=True)
     raise error
 
 

@@ -3,6 +3,9 @@ import discord
 import asyncio
 import mysql.connector
 
+class CannotPaginate(Exception):
+    pass
+
 async def embed_template(name, value):
     embed = discord.Embed(color=0xdd1313)
     embed.add_field(name=name, value=value)

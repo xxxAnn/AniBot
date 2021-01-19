@@ -1,40 +1,30 @@
 from Libraries.Economy.globals import Waterfall, EconomyHandler
+from Libraries.Economy.metareader import Metareader
+import json
 
 class ItemHandler:
     class Item(Waterfall):
-        def __init__(self, id, name, amount, exclusive):
+        def __init__(self, id, name, amount, exclusive, itemtype):
             self.id = str(id)
             self.name = name
             self.amount = amount
             self.exclusive = exclusive
+            self.type = itemtype
 
-    class Food(Item):
-        def _type(self):
-            return "Food"
-
-    class Tool(Item):
-        pass
-
-    class Weapon(Tool):
-        def _type(self):
-            return "Weapon"
-
-    class Resource(Item):
-        def _type(self):
-            return "Resource"
-
-    class FishingRod(Tool):
-        def _type(self):
-            return "FishingRod"
-
-    class Animal(Item):
-        def _type(self):
-            return "Animal"
+        def craftable(self):
+            if self.id in ItemHandler.metareader().crafts:
+                return True
+            return False
+        
+        def get_craft_metadata(self):
+            if self.craftable():
+                return ItemHandler.metareader().crafts[self.id]
+            return None
 
     class Inventory:
         def __init__(self, content, content_literal):
             self.content = content
-            self.deprecated_content_literal = content_literal # // This will be removed soon because I only use it for 1 thing
+            self.deprecated_content_literal = content_literal # // This will be removed soon because I have no clues what it does
 
         # // Adds item to inventory \\ #
         def __add__(self, item):
@@ -50,6 +40,13 @@ class ItemHandler:
                 if str(item.id) == selectid:
                     return item
             return False
+
+        def multi_has(self, ids):
+            for id in ids:
+                if self.has(str(id)) == False:
+                    return False
+            return True
+
         # // Returns the item \\ #
         def get(self, selectid: str):
             for item in self.content:
@@ -58,83 +55,26 @@ class ItemHandler:
             return None
 
     @staticmethod
+    def metareader():
+        return Metareader.get_instance()
+
+
+    @staticmethod
     def id_from_name(name: str):
-        id_dict = {
-        "oil": "1",
-        "bronze_ore": "2",
-        "frog": "3",
-        "diamond_ore": "4",
-        "gold_ore": "5",
-        "iron_ore": "6",
-        "silver_ore": "7",
-        "wood": "8",
-        "bread": "9",
-        "carp": "10",
-        "meat": "17",
-        "bronze_knife": "100",
-        "plastic": "101",
-        "toy_knife": "103",
-        "diamond_sword": "104",
-        "silver_sword": "105"}
+        meta = ItemHandler.metareader()
         name = str.lower(name)
-        if name in id_dict:
-            return(id_dict[name])
+        if name in meta.nametoid:
+            return(meta.nametoid[name])
         else:
             return "Not Found"
 
     @staticmethod
     def get_item(id: str, name=None, amount: int=1,  exclusive=False):
+        meta = ItemHandler.metareader()
         amount = int(amount)
-        dict_name = {
-        "1": "Oil",
-        "2": "Bronze Ore",
-        "3": "Frog",
-        "4": "Diamond Ore",
-        "5": "Gold Ore",
-        "6": "Iron Ore",
-        "7": "Silver Ore",
-        "8": "Wood",
-        "9": "Bread",
-        "10": "Carp",
-        "17": "Meat",
-        "100": "Bronze Knife",
-        "101": "Plastic",
-        "103": "Toy Knife",
-        "104": "Diamond Sword",
-        "105": "Silver Sword"
-        }
-        food = ["9", "10", "17"]
-        resource = ["1", "2", "4", "5", "6", "7", "8", "101"]
-        weapon = ["100", "103", "104", "105"]
-        animal = ["3"]
-        fishing_rod = []
-        if name == None:
-            if id in dict_name:
-                name = dict_name[id]
-                if id in food:
-                    return ItemHandler.Food(id, name, amount, exclusive)
-                elif id in resource:
-                    return ItemHandler.Resource(id, name, amount, exclusive)
-                elif id in weapon:
-                    return ItemHandler.Weapon(id, name, amount, exclusive)
-                elif id in animal:
-                    return ItemHandler.Animal(id, name, amount, exclusive)
-                elif id in fishing_rod:
-                    return ItemHandler.FishingRod(id, name, amount, exclusive)
-                else:
-                    return ItemHandler.Item(id, name, amount, exclusive)
-            else:
-                return "Not found"
+        if id in meta.idtoname:
+            name = meta.idtoname[id]
         else:
-            if id in food:
-                return ItemHandler.Food(id, name, amount, exclusive)
-            elif id in resource:
-                return ItemHandler.Resource(id, name, amount, exclusive)
-            elif id in weapon:
-                return ItemHandler.Weapon(id, name, amount, exclusive)
-            elif id in animal:
-                return ItemHandler.Animal(id, name, amount, exclusive)
-            elif id in fishing_rod:
-                return ItemHandler.FishingRod(id, name, amount, exclusive)
-            else:
-                return ItemHandler.Item(id, name, amount, exclusive)
+            return None
+        return ItemHandler.Item(str(id), str(name), amount=amount, exclusive=exclusive, itemtype=meta.types[id])
+

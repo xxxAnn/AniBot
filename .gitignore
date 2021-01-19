@@ -6,3 +6,8 @@ data/Data.json
 data/settings.json
 data/reactionroles.json
 *.pyc
+env
+.vs/PythonSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/AniBot/v16/.suo
