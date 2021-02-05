@@ -26,7 +26,6 @@ class ItemHandler:
             self.content = content
             self.deprecated_content_literal = content_literal # // This will be removed soon because I have no clues what it does
 
-        # // Adds item to inventory \\ #
         def __add__(self, item):
             for i in self.content:
                 if i.id == item.id:
@@ -34,7 +33,7 @@ class ItemHandler:
                     return "Added item"
             self.content.append(item)
             return "Added item"
-        # // Checks if the item is in the inventory and returns the item if it is \\ #
+
         def has(self, selectid: str):
             for item in self.content:
                 if str(item.id) == selectid:
@@ -55,9 +54,9 @@ class ItemHandler:
             return None
 
     @staticmethod
-    def metareader():
+    def metareader(update=False):
+        if update: Metareader.get_instance().update_meta()
         return Metareader.get_instance()
-
 
     @staticmethod
     def id_from_name(name: str):

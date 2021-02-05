@@ -1,8 +1,10 @@
+import json
+import time
+from random import randint
+
 from Libraries.Economy.items import ItemHandler
 from Libraries.Library import sqlClient
 from Libraries.Economy.globals import Waterfall, EconomyHandler
-import json
-import time
 
 class PlayerHandler:
     # // loads data from the database
@@ -34,31 +36,35 @@ class PlayerHandler:
         id = str(id)
         data = PlayerHandler.jsonLoad()
         if id not in data:
-            data[id] = {"Money": 0, "Inventory": [], "Energy": {"Val": 10, "Recover": int(time.time())}}
+            data[id] = {"Money": 0, "Inventory": [], "Position": (randint(10, 100), randint(10, 100)), "Energy": {"Val": 10, "Recover": int(time.time())}}
         listContent = []
         for i in data[id]["Inventory"]:
             if i["Amount"] != 0:
                 x = ItemHandler.get_item(id=i["Id"], name=i["Name"], amount=i["Amount"], exclusive=i["Exclusive"])
                 listContent.append(x)
         inventoryObject = ItemHandler.Inventory(listContent, data[id]["Inventory"])
-        playerObject = PlayerHandler.Player(inventoryObject, data[id]["Money"], data[id]["Energy"], id=id)
+        if not "Position" in data[id]:
+            data[id]["Position"] = (randint(10, 100), randint(10, 100))
+        playerObject = PlayerHandler.Player(inventoryObject, data[id]["Money"], data[id]["Energy"], id=id, position=data[id]["Position"])
         playerObject.save()
         return playerObject
 
     class Player(Waterfall):
 
-        def __init__(self, inventory, money, energy, id):
+        def __init__(self, inventory, money, energy, id, position):
             self.inventory = inventory
             self.money = money
             self.energy = energy
             self.id = str(id)
+            self.position = list(position)
 
         def save(self):
             data = PlayerHandler.jsonLoad()
             if self.id not in data:
-                data[self.id] = {"Energy": None, "Money": None, "Inventory": None}
+                data[self.id] = {"Energy": None, "Money": None, "Inventory": None, "Position": None}
             data[self.id]["Energy"] = self.energy
             data[self.id]["Money"] = self.money
+            data[self.id]["Position"] = self.position
             content_literal = PlayerHandler.toContentLiteral(self.inventory.content)
             data[self.id]["Inventory"] = content_literal
             PlayerHandler.jsonUpdate(data)

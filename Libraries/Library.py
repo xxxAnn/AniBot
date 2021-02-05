@@ -63,6 +63,11 @@ class sqlClient:
     def end(self):
         self.connection.close()
 
+    def insert(self, table: str, insert_column, data):
+        mycursor = self.connection.cursor(buffered=True)
+        mycursor.execute("INSERT INTO {0} ({1}) VALUES (%s)".format(table, insert_column), (data,))
+        self.connection.commit()
+
     def update(self, table: str, update_column: str, check_column: str, check_value: str, data):
         mycursor = self.connection.cursor(buffered=True)
         mycursor.execute("UPDATE {0} SET {1} = (%s) WHERE {2} = {3}".format(table, update_column, check_column, check_value), (data,))

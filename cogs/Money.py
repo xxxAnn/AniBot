@@ -11,6 +11,7 @@ from Libraries.Library import Pages, sqlClient, command_activated, embed_templat
 from Libraries.Economy.items import ItemHandler
 from Libraries.Economy.player import PlayerHandler
 from Libraries.Economy.shops import ShopHandler
+from Libraries.Economy.world import TheWorld
 from Libraries.Economy.globals import Waterfall, EconomyHandler
 import inspect
 import time
@@ -27,7 +28,6 @@ def jsonUpdate(data):
     client = sqlClient()
     client.update("data", "jsonColumn", "id", "1", json.dumps(data))
     client.end()
-
 
 lasttime = int(time.time())
 
@@ -62,11 +62,12 @@ class Economy(commands.Cog):
         self.fish_activated = {}
         self.fishermen = {}
         self.meta = ItemHandler.metareader()
+        self.world_map = TheWorld()
 
     @commands.command()
     async def idtoname(self, ctx, id: str):
         if not await command_activated(ctx, str(inspect.stack()[0][3])): return
-        embed = await embed_template("Money Cog", ItemHandler.get_item(id).name)
+        embed = await embed_template("Pezentry", ItemHandler.get_item(id).name)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -77,7 +78,7 @@ class Economy(commands.Cog):
         else:
             user = user[0]
         if user.bot:
-            embed = await embed_template("Money Cog", "Imagine being so lonely you play with a fucking bot")
+            embed = await embed_template("Pezentry", "Imagine being so lonely you play with a fucking bot")
             await ctx.send(embed=embed)
             return
         id = str(user.id)
@@ -103,12 +104,12 @@ class Economy(commands.Cog):
             else:
                 playerc.money -= amount
                 player.money += amount
-                embed = await embed_template("Money Cog", "Successfully paid user")
+                embed = await embed_template("Pezentry", "Successfully paid user")
                 await ctx.send(embed=embed)
             player.save()
             playerc.save()
         else:
-            embed = await embed_template("Money Cog", "Stealing is wrong")
+            embed = await embed_template("Pezentry", "Stealing is wrong")
             await ctx.send(embed=embed)
 
     @commands.command()
@@ -139,7 +140,7 @@ class Economy(commands.Cog):
             string = string + "{" + str(x + 1) + "}     #" + usa.display_name + "\n        Money : [" + str(val) + "] " + data[
                 "Currency"] + "\n"
         string = string + '```'
-        embed = await embed_template("Money Cog", string)
+        embed = await embed_template("Pezentry", string)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -150,7 +151,7 @@ class Economy(commands.Cog):
             player.inventory + ItemHandler.get_item(amount=1, exclusive=True, name=name, id="273")
             player.save()
         else:
-            embed = await embed_template("Money Cog", "Sorry you cant do that lol")
+            embed = await embed_template("Pezentry", "Sorry you cant do that lol")
             await ctx.send(embed=embed)
 
 
@@ -186,7 +187,7 @@ class Economy(commands.Cog):
                 text+= " and Item: **{1}** __x{0}__".format(item["requireditemsamount"][1], ItemHandler.get_item(item['requireditems'][1]).name)
             text+="\n"
             string+=text
-        embed = await embed_template("Money Cog", string)
+        embed = await embed_template("Pezentry", string)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -194,7 +195,7 @@ class Economy(commands.Cog):
         user = ctx.message.author
         player = PlayerHandler.constructPlayer(user.id)
         executeSomething()
-        embed = await embed_template("Money Cog", "{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
+        embed = await embed_template("Pezentry", "{0}/10, Recovers in {1} seconds".format(player.energy["Val"], int(-1*(time.time()-(player.energy["Recover"]+300)))))
         await ctx.send(embed=embed)
         player.save()
 
@@ -212,17 +213,17 @@ class Economy(commands.Cog):
                     player.energy["Val"] += cramed["Eatables"][itemId]
                     if player.energy["Val"] > 10:
                         player.energy["Val"] = 10
-                    embed = await embed_template("Money Cog", "Replenished {0} energy".format(cramed["Eatables"][itemId]))
+                    embed = await embed_template("Pezentry", "Replenished {0} energy".format(cramed["Eatables"][itemId]))
                     await ctx.send(embed=embed)
                     player.save()
                 else:
-                    embed = await embed_template("Money Cog", "Y'aint have that")
+                    embed = await embed_template("Pezentry", "Y'aint have that")
                     await ctx.send(embed=embed)
             else:
-                embed = await embed_template("Money Cog", "Y'aint have that")
+                embed = await embed_template("Pezentry", "Y'aint have that")
                 await ctx.send(embed=embed)
         else:
-            embed = await embed_template("Money Cog", "Ya can't that")
+            embed = await embed_template("Pezentry", "Ya can't that")
             await ctx.send(embed=embed)
 
     @commands.command(aliases=['inv'])
@@ -252,9 +253,7 @@ class Economy(commands.Cog):
         player = PlayerHandler.constructPlayer(ctx.author.id)
         if player.energy["Val"]>0:
             player.energy["Val"]-=1
-            items = self.meta.exploitable
-            weights = self.meta.exploitweights
-            result = random.choices(items, weights)[0]
+            result = self.meta.rolls.exploit(self.world_map.get_tile(player.position))
             money = randint(100,500)
             if result != 0:
                 if player.inventory.has(result) is not False:
@@ -265,13 +264,13 @@ class Economy(commands.Cog):
                     invitem.amount = (amount := randint(1,3))
                     player.inventory + invitem
             if result == 0:
-                embed = await embed_template("Money Cog", "You gained {1}{0}".format(str(money), "$"))
+                embed = await embed_template("Pezentry", "You gained {1}{0}".format(str(money), "$"))
                 await ctx.send(embed=embed)
             else:
-                embed = await embed_template("Money Cog", "You gained {1}{0} and found {3} x{2}".format(str(money), "$", amount, invitem.name))
+                embed = await embed_template("Pezentry", "You gained {1}{0} and found {3} x{2}".format(str(money), "$", amount, invitem.name))
                 await ctx.send(embed=embed)
         else:
-            embed = await embed_template("Money Cog", "No energy sowwy")
+            embed = await embed_template("Pezentry", "No energy sowwy")
             await ctx.send(embed=embed)
         player.save()
 
@@ -284,14 +283,14 @@ class Economy(commands.Cog):
             player.money-=5000
             response, id = ShopHandler.createShop(name=Name, ownerId=str(ctx.author.id))
             if isinstance(response, EconomyHandler.Success):
-                embed = await embed_template("Money Cog", str(response)+"\n Paid 5,000 and bought a level one shop")
+                embed = await embed_template("Pezentry", str(response)+"\n Paid 5,000 and bought a level one shop")
                 await ctx.send(embed=embed)
                 player.save()
             else:
-                embed = await embed_template("Money Cog", str(response))
+                embed = await embed_template("Pezentry", str(response))
                 await ctx.send(embed=embed)
         else:
-            embed = await embed_template("Money Cog", "You don't have the money")
+            embed = await embed_template("Pezentry", "You don't have the money")
             await ctx.send(embed=embed)
 
     @commands.command()
@@ -326,19 +325,19 @@ class Economy(commands.Cog):
                         player_inv_item.amount-=int(amount)
                         shop.save()
                         player.save()
-                        embed = await embed_template("Money Cog", "Successfully put item to sold")
+                        embed = await embed_template("Pezentry", "Successfully put item to sold")
                         await ctx.send(embed=embed)
                     else:
-                        embed = await embed_template("Money Cog", str(response))
+                        embed = await embed_template("Pezentry", str(response))
                         await ctx.send(embed=embed)
                 else:
-                    embed = await embed_template("Money Cog", "You don't have enough of that item")
+                    embed = await embed_template("Pezentry", "You don't have enough of that item")
                     await ctx.send(embed=embed)
             else:
-                embed = await embed_template("Money Cog", "You don't have that item")
+                embed = await embed_template("Pezentry", "You don't have that item")
                 await ctx.send(embed=embed)
         else:
-            embed = await embed_template("Money Cog", "This isn't your shop")
+            embed = await embed_template("Pezentry", "This isn't your shop")
             await ctx.send(embed=embed)
 
     @commands.command()
@@ -363,13 +362,13 @@ class Economy(commands.Cog):
                 shopOwner.save()
                 player.save()
                 shop.save()
-                embed = await embed_template("Money Cog", "Successfully bought item")
+                embed = await embed_template("Pezentry", "Successfully bought item")
                 await ctx.send(embed=embed)
             else:
-                embed = await embed_template("Money Cog", "You don't have the money")
+                embed = await embed_template("Pezentry", "You don't have the money")
                 await ctx.send(embed=embed)
         else:
-            embed = await embed_template("Money Cog", "This item is not for sold")
+            embed = await embed_template("Pezentry", "This item is not for sold")
             await ctx.send(embed=embed)
 
     @commands.command()
@@ -379,7 +378,7 @@ class Economy(commands.Cog):
             uza.money=amount
             uza.save()
         else:
-            embed = await embed_template("Money Cog", "You can't do that silly")
+            embed = await embed_template("Pezentry", "You can't do that silly")
             await ctx.send(embed=embed)
 
     @commands.command()
@@ -409,7 +408,7 @@ class Economy(commands.Cog):
             message = await self.get_message_from_playload(playload)
             await message.clear_reactions()
             channel = self.bot.get_channel(playload.channel_id)
-            embed = await embed_template("Money Cog", "Too quick")
+            embed = await embed_template("Pezentry", "Too quick")
             await channel.send(embed=embed)
         elif self.fish_activated[id] == 1:
             message = await self.get_message_from_playload(playload)
@@ -424,15 +423,15 @@ class Economy(commands.Cog):
                 item.amount = (amount := randint(1,3))
                 player.inventory + item
                 player.save()
-                embed = await embed_template("Money Cog", "You got {0} x{1}".format(item.name, amount))
+                embed = await embed_template("Pezentry", "You got {0} x{1}".format(item.name, amount))
             else:
-                embed = await embed_template("Money Cog", "You got nothing")
+                embed = await embed_template("Pezentry", "You got nothing")
             await message.channel.send(embed=embed)
         elif self.fish_activated[id] == 2:
             message = await self.get_message_from_playload(playload)
             channel = self.bot.get_channel(playload.channel_id)
             await message.clear_reactions()
-            embed = await embed_template("Money Cog", "Too slow")
+            embed = await embed_template("Pezentry", "Too slow")
             await channel.send(embed=embed)
 
     async def get_message_from_playload(self, playload):
