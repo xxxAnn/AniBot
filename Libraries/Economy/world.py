@@ -9,10 +9,17 @@ class TheWorld:
         self.load()
 
     def load(self):
-        client = sqlClient()
-        result = client.select("data", "id", "2")
-        client.end()
-        temp = json.loads(result[1]) 
+        try: 
+            client = sqlClient()
+            result = client.select("data", "id", "2")
+            client.end()
+            temp = json.loads(result[1]) 
+        except:
+            client = sqlClient()
+            client.update("data", "jsonColumn", "id", "2", json.dumps({}))
+            client.end()
+            self.load()
+            return
         for tile in temp:
             self.tiles[tuple(tile["Position"])] = Tile(pos=tile["Position"], feature=tile["Feature"])
         
