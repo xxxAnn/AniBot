@@ -34,8 +34,11 @@ class ItemRoller:
             self.exploitable[featurename] = [(k, self.findmultiplier(basedata[k], abovedata[featurename])) for k in basedata.keys() if basedata[k]["Exploit"] != False]
     
     def findmultiplier(self, x, y):
-        if x["Type"] in y: return x["Exploit"]*y[x["Type"]] 
-        else: return x["Exploit"]
+        try:
+            if x["Type"] in y: return x["Exploit"]*y[x["Type"]] 
+            else: return x["Exploit"]
+        except:
+            return x["Exploit"]
 
     def exploit(self, currenttile):
         feature = currenttile.feature
