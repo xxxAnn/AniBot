@@ -17,7 +17,7 @@ class TheWorld:
         except:
             client = sqlClient()
             client.update("data", "jsonColumn", "id", "2", json.dumps([{"Position": (1, 4), "Feature": "Forest"}]))
-            print(client.select("data", "id", "2"))
+            print(json.dumps([{"Position": (1, 4), "Feature": "Forest"}]))
             client.end()
             self.load()
             return
