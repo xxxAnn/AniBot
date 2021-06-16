@@ -10,16 +10,12 @@ class TheWorld:
 
     def load(self):
         try: 
-            client = sqlClient()
-            result = client.select("data", "id", "2")
-            client.end()
-            temp = json.loads(result[1]) 
+            with open("data/supermap.json", "r") as f:
+                temp = json.loads(f.read())
         except:
-            client = sqlClient()
-            client.update("data", "jsonColumn", "id", "2", json.dumps([{"Position": (1, 4), "Feature": "Forest"}]))
-            print(json.dumps([{"Position": (1, 4), "Feature": "Forest"}]))
-            client.end()
-            self.load()
+            with open("data/supermap.json", "w") as f:
+                f.write(json.dumps([]))
+             self.load()
             return
         for tile in temp:
             self.tiles[tuple(tile["Position"])] = Tile(pos=tile["Position"], feature=tile["Feature"])
@@ -32,9 +28,8 @@ class TheWorld:
         datastruct = []
         for pos, tile in self.tiles.items():
             datastruct.append({"Position": pos, "Feature": tile.feature})
-        client = sqlClient()
-        client.update("data", "jsonColumn", "id", "2", json.dumps(datastruct))
-        client.end()
+        with open("data/supermap.json", "w") as f:
+                f.write(json.dumps(datastruct))
 
     def move_to(self, position: tuple, vector: tuple):
         destination = tuple(map(sum, zip(position, vector)))
