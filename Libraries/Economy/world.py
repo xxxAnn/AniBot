@@ -15,7 +15,7 @@ class TheWorld:
         except:
             with open("data/supermap.json", "w") as f:
                 f.write(json.dumps([]))
-             self.load()
+            self.load()
             return
         for tile in temp:
             self.tiles[tuple(tile["Position"])] = Tile(pos=tile["Position"], feature=tile["Feature"])
