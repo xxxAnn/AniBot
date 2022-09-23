@@ -32,7 +32,7 @@ numpy==1.19.1
 packaging==20.4
 Pillow==7.2.0
 pip-upgrader==1.4.15
-protobuf==3.12.2
+protobuf==3.18.3
 pycparser==2.20
 PyDictionary==1.5.2
 pyglet==1.5.7
